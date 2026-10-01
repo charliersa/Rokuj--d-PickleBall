@@ -856,21 +856,21 @@ function onOpen() {
 
 function menuApplyTheme() {
   applyTheme();
-  SpreadsheetApp.getUi().alert('美編已重新套用（配色：' + String(getSetting('試算表配色') || 'light') + '）。');
+  alert_('美編已重新套用（配色：' + String(getSetting('試算表配色') || 'light') + '）。');
 }
 
 function menuToggleTheme() {
   var next = String(getSetting('試算表配色') || 'light').trim().toLowerCase() === 'dark' ? 'light' : 'dark';
   setSetting('試算表配色', next);
   applyTheme();
-  SpreadsheetApp.getUi().alert('已切換成 ' + (next === 'dark' ? '深色（跟網頁同一套顏色）' : '淺色（好讀、好印）') + '。');
+  alert_('已切換成 ' + (next === 'dark' ? '深色（跟網頁同一套顏色）' : '淺色（好讀、好印）') + '。');
 }
 
 function menuNewPassword() {
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', pw = '';
   for (var i = 0; i < 10; i++) pw += chars.charAt(Math.floor(Math.random() * chars.length));
   setSetting('管理密碼', pw);
-  SpreadsheetApp.getUi().alert('新的管理密碼：\n\n' + pw + '\n\n已寫入「設定」工作表。原本已解鎖的手機下次操作時要重新輸入。');
+  alert_('新的管理密碼：\n\n' + pw + '\n\n已寫入「設定」工作表。原本已解鎖的手機下次操作時要重新輸入。');
 }
 
 function menuClearSnapshots() {
@@ -890,7 +890,7 @@ function menuStatus() {
   var counts = [TAB.players, TAB.scores, TAB.log].map(function (t) {
     return t + '：' + Math.max(0, sheet(t).getLastRow() - 1) + ' 筆';
   }).join('\n');
-  SpreadsheetApp.getUi().alert(
+  alert_(
     '版本 ' + s.version + '\n時區 ' + s.timeZone + '\n' +
     '管理密碼：' + (s.hasPassword ? '已設定' : '⚠ 還沒設定，管理動作會全部被拒絕') + '\n' +
     '球友自行報名：' + (s.openSignup ? '開放' : '關閉（需密碼）') + '\n\n' + counts
