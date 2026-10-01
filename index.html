@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#08111D;font-family:'Noto Sans TC',sans-serif;color:#F3F6FA;-webkit-font-smoothing:antialiased}
+a{color:#D7F54A}a:hover{color:#FFFFFF}
+input,select,button{font-family:inherit}
+input::placeholder{color:#6B7C93}
+</style>
+</helmet>
+<div style="max-width:480px;margin:0 auto;min-height:100vh;background:#0E1A2B;display:flex;flex-direction:column;box-shadow:0 0 0 1px #1B2C44">
+
+<header style="padding:22px 18px 14px;border-bottom:1px solid #1E3150;display:flex;flex-direction:column;gap:10px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;letter-spacing:.14em;font-size:13px;color:#D7F54A">SMASH DINKER · 固定團</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;color:#9AA9BD">FRI 19:00–21:00</div>
+  </div>
+  <h1 style="margin:0;font-size:28px;font-weight:900;line-height:1.15;letter-spacing:.02em">六甲頂匹克球熱血團</h1>
+  <div style="font-size:14px;color:#C5D0DE">週五夜打熱血開揪！首發 {{ startLabel }} 起，每週五一起暢快揮拍</div>
+  <div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 2px;margin:0 -18px;padding-left:18px;padding-right:18px">
+    <sc-for list="{{ sessions }}" as="s" hint-placeholder-count="6">
+      <button onClick="{{ s.onClick }}" style="flex:0 0 auto;border:1px solid {{ s.border }};background:{{ s.bg }};color:{{ s.color }};border-radius:10px;padding:7px 12px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;line-height:1">{{ s.md }}</span>
+        <span style="font-size:11px;font-weight:500">{{ s.wk }}</span>
+      </button>
+    </sc-for>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C5D0DE">
+    <span style="background:#B98CFF;color:#160B2B;font-weight:700;border-radius:6px;padding:2px 7px;font-size:12px">本週 C場</span>
+    <span style="flex:1">{{ cInfo.title }}</span>
+  </div>
+</header>
+
+<main style="flex:1;padding:16px 14px 24px;display:flex;flex-direction:column;gap:14px">
+
+<sc-if value="{{ copyFallback }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#2A2112;border:1px solid #6B5415;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:13px;line-height:1.6;color:#FFD27A">這個瀏覽器不允許自動複製。請長按下方文字全選後複製。</div>
+    <textarea readOnly="{{ true }}" rows="10" value="{{ copyFallback }}" onFocus="{{ onCopySelect }}" style="width:100%;box-sizing:border-box;background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px;color:#F3F6FA;font-size:13px;line-height:1.6;font-family:inherit;resize:vertical"></textarea>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showCloudBar }}" hint-placeholder-val="{{ false }}">
+  <div style="background:{{ cloudBar.bg }};border:1px solid #2A3F5E;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px">
+    <span style="flex:1;font-size:13px;line-height:1.5;color:{{ cloudBar.color }};text-wrap:pretty">{{ cloudBar.text }}</span>
+    <button onClick="{{ onRetry }}" style="flex:0 0 auto;background:transparent;border:1px solid #2A3F5E;color:#D7F54A;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">重試</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ askToken }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#16263D;border:1px solid #2A3F5E;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:13px;color:#C5D0DE">請輸入管理密碼（在試算表的「設定」工作表裡）。解鎖後這支手機會記住，不用每次輸入。</div>
+    <div style="display:flex;gap:8px">
+      <input type="password" value="{{ tokenInput }}" onChange="{{ onTokenInput }}" placeholder="管理密碼" style="flex:1;min-width:0;background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px;color:#F3F6FA;font-size:16px;outline:none">
+      <button onClick="{{ onTokenSave }}" style="flex:0 0 auto;border:none;border-radius:10px;background:#D7F54A;color:#0E1A2B;font-weight:900;font-size:15px;padding:0 16px;min-height:44px;cursor:pointer">解鎖</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isInfo }}" hint-placeholder-val="{{ false }}">
+  <section style="background:#16263D;border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;letter-spacing:.14em;font-size:13px;color:#D7F54A">FRIDAY NIGHT PICKLEBALL</div>
+    <div style="font-size:22px;font-weight:900;line-height:1.3">週五夜打熱血開揪！</div>
+    <div style="font-size:15px;line-height:1.7;color:#C5D0DE;text-wrap:pretty">首發開打：{{ startLabel }} 起，每週五晚上 19:00–21:00 一起熱血開打。各位球友，週五晚上想來動一動、打幾場精彩的雙打嗎？歡迎一起來六甲頂暢快揮拍！</div>
+    <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.65;color:#F3F6FA;display:flex;gap:8px"><span style="color:#D7F54A;font-weight:900">備註</span><span>本社團目前為<b style="color:#D7F54A">暢打團</b>，DUPR 等級僅作為分配場地參考，讓大家打得更順暢，不設門檻、不比輸贏壓力。</span></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <div style="font-weight:900;font-size:17px;padding:0 4px">三個場地怎麼選</div>
+    <div style="background:#16263D;border-radius:14px;padding:14px 16px;border-top:4px solid #FF5A36;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;color:#FF5A36">A</span><span style="font-weight:900">極限挑戰場</span><span style="font-size:12px;color:#9AA9BD">建議 DUPR 3.0+</span></div>
+      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">定位：</b>極限挑戰你的能力，高節奏對戰與技術切磋。</div>
+      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">人數：</b>上限 5～6 人，輪替雙打，維持高強度運動量。</div>
+      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">適合：</b>熟悉切球、廚房區 dink / speed up 戰術應用、具備一定比賽經驗者。</div>
+    </div>
+    <div style="background:#16263D;border-radius:14px;padding:14px 16px;border-top:4px solid #3FD0C9;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;color:#3FD0C9">B</span><span style="font-weight:900">友善歡樂場</span><span style="font-size:12px;color:#9AA9BD">建議 DUPR 2.5–2.9</span></div>
+      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">定位：</b>友善交流與歡樂場面，順暢拉拍與雙打配合。</div>
+      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">人數：</b>上限 5～6 人，歡樂輪替交流。</div>
+      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">適合：</b>掌握基本發球、接發球，想找同級球友穩健流汗者。</div>
+    </div>
+    <div style="background:#16263D;border-radius:14px;padding:14px 16px;border-top:4px solid #B98CFF;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;color:#B98CFF">C</span><span style="font-weight:900">主題訓練場</span><span style="font-size:12px;color:#9AA9BD">建議 DUPR 2.5–2.9</span></div>
+      <div style="font-size:14px;line-height:1.65;color:#C5D0DE">單打挑戰賽與混雙友誼賽，解放你的無限可能！每週主題不同：</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:12px;font-weight:700;color:#B98CFF">第一週・第三週</div>
+          <div style="font-weight:700">8人循環單打＆混雙（4男4女）</div>
+          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">單打與混雙交替循環，人人都有豐富的出賽場次。</div>
+        </div>
+        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:12px;font-weight:700;color:#B98CFF">第二週｜8人女雙友誼賽</div>
+          <div style="font-weight:700">玩法1｜「拆夥不拆情」旋轉搭檔制</div>
+          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">不固定搭檔，每輪重新組合，共 7 輪，每人與其他 7 人各搭檔一次。每場短局搶 9 分，最後計算個人勝場數與總得分。認識新朋友，沒有固定搭檔的強弱壓力。</div>
+        </div>
+        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:12px;font-weight:700;color:#B98CFF">第四週</div>
+          <div style="font-weight:700">4人主題訓練（精緻進階）</div>
+          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">限額 4 人，小班輪換搭檔，針對技術主題精緻練習。</div>
+        </div>
+        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:12px;font-weight:700;color:#B98CFF">第五週（當月遇第五個週五）｜女雙暢打友誼賽</div>
+          <div style="font-weight:700">玩法2｜閨蜜女雙 PK 賽</div>
+          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">2 人一組報名（共 4 組），單循環賽＋冠亞軍決賽。適合有固定戰友的姐妹一起挑戰默契。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#16263D;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-weight:900;font-size:17px">報名與分場須知</div>
+    <div style="display:grid;grid-template-columns:24px 1fr;gap:10px 8px;font-size:14px;line-height:1.65;color:#C5D0DE">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">1</span><span>報名時填寫姓名、性別與 <b style="color:#F3F6FA">DUPR 等級</b>，可選「自動」或指定志願場地。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">2</span><span>選「自動」者：3.0 以上先排 A 場，A 場額滿再依序排 B、C 場；2.5–2.9 先排 B 場，B 場額滿再排 C 場。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">3</span><span>依<b style="color:#F3F6FA">報名先後順序</b>分配，額滿者進入候補，有人取消會自動遞補。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">4</span><span>C 場名額有性別限制：第一、三週 4 男 4 女；第二、五週限女生 8 位；第四週限額 4 人。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">5</span><span>第五週閨蜜 PK 賽請兩人<b style="color:#F3F6FA">連續報名</b>，系統會依順序兩兩成組。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">6</span><span>賽程由系統自動輪替，平均分配上場與休息，每局結束請於「賽程」頁登錄比分。</span>
+    </div>
+  </section>
+
+  <button onClick="{{ goSignup }}" style="min-height:50px;border:none;border-radius:12px;background:#D7F54A;color:#0E1A2B;font-weight:900;font-size:17px;letter-spacing:.06em;cursor:pointer">我要報名 →</button>
+</sc-if>
+
+<sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+  <section style="background:#16263D;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="font-weight:700;font-size:16px">報名 · {{ sessionLabel }}</div>
+    <input value="{{ form.name }}" onChange="{{ onName }}" placeholder="姓名 / 暱稱" style="background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:12px;color:#F3F6FA;font-size:16px;outline:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:flex;gap:6px">
+        <sc-for list="{{ genders }}" as="g" hint-placeholder-count="2">
+          <button onClick="{{ g.onClick }}" style="flex:1;min-height:44px;border-radius:10px;border:1px solid {{ g.border }};background:{{ g.bg }};color:{{ g.color }};font-weight:700;font-size:15px;cursor:pointer">{{ g.label }}</button>
+        </sc-for>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:0 12px">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;color:#9AA9BD;font-size:15px">DUPR</span>
+        <input type="number" step="0.1" min="{{ duprMin }}" max="{{ duprMax }}" value="{{ form.dupr }}" onChange="{{ onDupr }}" style="width:100%;background:transparent;border:none;color:#F3F6FA;font-size:18px;font-family:'Barlow Condensed',sans-serif;font-weight:800;outline:none;min-height:42px">
+      </label>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:12px;color:#9AA9BD">志願場地</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+        <sc-for list="{{ prefs }}" as="p" hint-placeholder-count="4">
+          <button onClick="{{ p.onClick }}" style="min-height:44px;border-radius:10px;border:1px solid {{ p.border }};background:{{ p.bg }};color:{{ p.color }};font-weight:700;font-size:14px;cursor:pointer">{{ p.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}">
+      <div style="color:#FF8A70;font-size:13px">{{ formError }}</div>
+    </sc-if>
+    <button onClick="{{ addPlayer }}" style="min-height:50px;border:none;border-radius:12px;background:#D7F54A;color:#0E1A2B;font-weight:900;font-size:17px;letter-spacing:.06em;cursor:pointer">＋ 我要報名</button>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 4px">
+      <div style="font-weight:700">報名名單 <span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;color:#D7F54A">{{ playerCount }}</span> 人</div>
+      <div style="display:flex;gap:6px">
+        <sc-if value="{{ cloudOn }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onRetry }}" style="background:transparent;border:1px solid #2A3F5E;color:#C5D0DE;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">重新整理</button>
+        </sc-if>
+        <button onClick="{{ loadDemo }}" style="background:transparent;border:1px solid #2A3F5E;color:#C5D0DE;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">載入範例</button>
+        <button onClick="{{ clearAll }}" style="background:transparent;border:1px solid #2A3F5E;color:#FF8A70;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">清空</button>
+      </div>
+    </div>
+    <sc-if value="{{ reuseLabel }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ onReuse }}" style="min-height:44px;border:1px dashed #2A3F5E;border-radius:12px;background:transparent;color:#C5D0DE;font-weight:700;font-size:14px;cursor:pointer">{{ reuseLabel }}</button>
+    </sc-if>
+    <sc-if value="{{ confirmMsg }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#2A2112;border:1px solid #6B5415;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:14px;line-height:1.65;color:#FFD27A;text-wrap:pretty">{{ confirmMsg }}</div>
+        <div style="display:flex;gap:8px">
+          <button onClick="{{ onConfirmYes }}" style="flex:1;min-height:44px;border:none;border-radius:10px;background:#FF8A70;color:#2A0F08;font-weight:900;font-size:15px;cursor:pointer">{{ confirmYes }}</button>
+          <button onClick="{{ onConfirmNo }}" style="flex:1;min-height:44px;border:1px solid #2A3F5E;border-radius:10px;background:transparent;color:#C5D0DE;font-weight:700;font-size:15px;cursor:pointer">取消</button>
+        </div>
+      </div>
+    </sc-if>
+    <div style="background:#16263D;border-radius:14px;overflow:hidden">
+      <sc-for list="{{ roster }}" as="r" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:28px 1fr auto auto 32px;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #1E3150">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#6B7C93;font-size:15px">{{ r.no }}</span>
+          <div style="display:flex;align-items:center;gap:6px;min-width:0">
+            <span style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</span>
+            <span style="font-size:12px;color:{{ r.gColor }}">{{ r.gtxt }}</span>
+            <span style="font-size:11px;color:#6B7C93">{{ r.prefTxt }}</span>
+          </div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px">{{ r.dupr }}</span>
+          <span style="min-width:40px;text-align:center;font-size:12px;font-weight:700;border-radius:6px;padding:3px 6px;background:{{ r.badgeBg }};color:{{ r.badgeColor }}">{{ r.badge }}</span>
+          <button onClick="{{ r.remove }}" style="background:transparent;border:none;color:#6B7C93;font-size:18px;cursor:pointer;min-height:32px">×</button>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="background:#16263D;border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="font-size:14px;font-weight:700">首發開打日期</div>
+      <div style="font-size:12px;color:#9AA9BD">自動排出之後的每週五</div>
+    </div>
+    <input type="date" value="{{ startDate }}" onChange="{{ onStart }}" style="background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px;color:#F3F6FA;font-size:15px;color-scheme:dark">
+  </section>
+
+  <sc-if value="{{ cloudOn }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ onLockToggle }}" style="min-height:44px;border:1px dashed #2A3F5E;border-radius:12px;background:transparent;color:#9AA9BD;font-size:13px;cursor:pointer">{{ lockLabel }}</button>
+  </sc-if>
+</sc-if>
+
+<sc-if value="{{ isCourts }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 4px;gap:8px">
+    <div style="font-weight:700;font-size:16px">分場 · {{ sessionLabel }}</div>
+    <div style="font-size:12px;color:#9AA9BD;text-align:right">依報名順序、DUPR、志願自動分配</div>
+  </div>
+  <sc-if value="{{ moveNote }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#2A2112;border:1px solid #6B5415;border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:10px">
+      <span style="flex:1;font-size:13px;line-height:1.6;color:#FFD27A;text-wrap:pretty">{{ moveNote }}</span>
+      <button onClick="{{ onMoveNoteClose }}" aria-label="關閉提示" style="background:transparent;border:none;color:#FFD27A;font-size:16px;cursor:pointer;padding:0;min-width:24px;min-height:24px">×</button>
+    </div>
+  </sc-if>
+  <button onClick="{{ onCopyCourts }}" style="min-height:46px;border:1px solid #2A3F5E;border-radius:12px;background:#16263D;color:#D7F54A;font-weight:700;font-size:15px;cursor:pointer">{{ copyCourtsLabel }}</button>
+  <sc-if value="{{ cloudOn }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ onPushSnapshot }}" style="min-height:46px;border:1px solid #2A3F5E;border-radius:12px;background:#16263D;color:#C5D0DE;font-weight:700;font-size:15px;cursor:pointer">推送分場／賽程／戰績到試算表</button>
+  </sc-if>
+  <sc-for list="{{ courts }}" as="c" hint-placeholder-count="3">
+    <section style="background:#16263D;border-radius:14px;overflow:hidden;border-top:4px solid {{ c.accent }}">
+      <div style="padding:14px 16px 10px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:34px;line-height:1;color:{{ c.accent }}">{{ c.letter }}</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+            <span style="font-weight:900;font-size:16px">{{ c.name }}</span>
+            <span style="font-size:12px;color:#9AA9BD">{{ c.level }}</span>
+          </div>
+          <div style="text-align:right">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px">{{ c.count }}</span><span style="font-family:'Barlow Condensed',sans-serif;color:#6B7C93;font-size:16px"> / {{ c.cap }}</span>
+          </div>
+        </div>
+        <div style="height:4px;background:#0E1A2B;border-radius:2px;overflow:hidden"><div style="height:100%;width:{{ c.pct }};background:{{ c.accent }}"></div></div>
+        <div style="font-size:13px;color:#C5D0DE;text-wrap:pretty">{{ c.desc }}</div>
+        <sc-if value="{{ c.note }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;color:#FFD27A">{{ c.note }}</div>
+        </sc-if>
+      </div>
+      <sc-for list="{{ c.players }}" as="p" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 16px;border-top:1px solid #1E3150">
+          <span style="font-size:12px;color:{{ p.gColor }};width:14px">{{ p.gtxt }}</span>
+          <span style="flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }} <span style="font-weight:400;font-size:11px;color:#FFD27A">{{ p.warn }}</span></span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;width:30px;text-align:right">{{ p.dupr }}</span>
+          <div style="display:flex;gap:4px">
+            <sc-for list="{{ p.chips }}" as="k" hint-placeholder-count="3">
+              <button onClick="{{ k.onClick }}" title="移到{{ k.l }}場" style="width:28px;height:28px;border-radius:7px;border:1px solid {{ k.border }};background:{{ k.bg }};color:{{ k.color }};font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;cursor:pointer;padding:0">{{ k.l }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px 16px;border-top:1px solid #1E3150;font-size:13px;color:#6B7C93">尚無球友</div>
+      </sc-if>
+    </section>
+  </sc-for>
+  <section style="background:#121F33;border:1px dashed #2A3F5E;border-radius:14px;overflow:hidden">
+    <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-weight:700">候補名單</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:#FFD27A">{{ waitCount }}</span>
+    </div>
+    <sc-for list="{{ waitlist }}" as="p" hint-placeholder-count="2">
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 16px;border-top:1px solid #1E3150">
+        <span style="font-size:12px;color:{{ p.gColor }};width:14px">{{ p.gtxt }}</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:700">{{ p.name }}</span><span style="font-size:11px;color:#9AA9BD">{{ p.reason }}</span></span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px">{{ p.dupr }}</span>
+        <div style="display:flex;gap:4px">
+          <sc-for list="{{ p.chips }}" as="k" hint-placeholder-count="3">
+            <button onClick="{{ k.onClick }}" style="width:28px;height:28px;border-radius:7px;border:1px solid {{ k.border }};background:{{ k.bg }};color:{{ k.color }};font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;cursor:pointer;padding:0">{{ k.l }}</button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isSched }}" hint-placeholder-val="{{ false }}">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#16263D;border-radius:12px;padding:5px">
+    <sc-for list="{{ schedTabs }}" as="t" hint-placeholder-count="3">
+      <button onClick="{{ t.onClick }}" style="min-height:44px;border:none;border-radius:9px;background:{{ t.bg }};color:{{ t.color }};font-weight:900;font-size:15px;cursor:pointer">{{ t.label }}</button>
+    </sc-for>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:4px;padding:0 4px">
+    <div style="font-weight:900;font-size:17px">{{ sched.title }}</div>
+    <div style="font-size:13px;color:#9AA9BD;text-wrap:pretty">{{ sched.rule }}</div>
+    <div style="font-size:12px;color:{{ sched.color }};text-wrap:pretty">{{ sched.note }}</div>
+  </div>
+  <button onClick="{{ onCopySched }}" style="min-height:46px;border:1px solid #2A3F5E;border-radius:12px;background:#16263D;color:#D7F54A;font-weight:700;font-size:15px;cursor:pointer">{{ copySchedLabel }}</button>
+  <sc-if value="{{ sched.missing }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#2A2112;color:#FFD27A;border-radius:12px;padding:12px 14px;font-size:14px">{{ sched.missing }}</div>
+  </sc-if>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ sched.matches }}" as="m" hint-placeholder-count="5">
+      <div style="background:#16263D;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#9AA9BD">
+          <span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#F3F6FA">{{ m.time }}</span>　{{ m.label }}</span>
+          <span>#{{ m.no }} · 搶{{ m.target }}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 54px;gap:8px;align-items:center">
+          <span style="font-weight:700;color:{{ m.aColor }};font-size:15px">{{ m.tName }}</span>
+          <input type="number" min="0" value="{{ m.sa }}" onChange="{{ m.onA }}" placeholder="–" style="background:#0E1A2B;border:1px solid #2A3F5E;border-radius:8px;color:#F3F6FA;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;height:38px;width:100%;box-sizing:border-box;outline:none">
+          <span style="font-weight:700;color:{{ m.bColor }};font-size:15px">{{ m.uName }}</span>
+          <input type="number" min="0" value="{{ m.sb }}" onChange="{{ m.onB }}" placeholder="–" style="background:#0E1A2B;border:1px solid #2A3F5E;border-radius:8px;color:#F3F6FA;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;height:38px;width:100%;box-sizing:border-box;outline:none">
+        </div>
+        <sc-if value="{{ m.err }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;line-height:1.5;color:#FF8A70">{{ m.err }}　<span style="color:#9AA9BD">這局不計入戰績</span></div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isRank }}" hint-placeholder-val="{{ false }}">
+  <div style="font-weight:700;font-size:16px;padding:0 4px">戰績 · {{ sessionLabel }}</div>
+  <sc-for list="{{ standings }}" as="c" hint-placeholder-count="3">
+    <section style="background:#16263D;border-radius:14px;overflow:hidden;border-left:0">
+      <div style="padding:12px 16px;display:flex;align-items:center;gap:10px">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;line-height:1;color:{{ c.accent }}">{{ c.letter }}</span>
+        <span style="font-weight:700">{{ c.name }}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:28px 1fr 56px 44px 44px;gap:6px;padding:6px 16px;font-size:11px;color:#6B7C93;border-top:1px solid #1E3150">
+        <span>#</span><span>{{ c.unit }}</span><span style="text-align:right">勝-敗</span><span style="text-align:right">得分</span><span style="text-align:right">淨分</span>
+      </div>
+      <sc-for list="{{ c.rows }}" as="r" hint-placeholder-count="4">
+        <div style="display:grid;grid-template-columns:28px 1fr 56px 44px 44px;gap:6px;padding:8px 16px;border-top:1px solid #1E3150;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:17px">
+          <span style="font-weight:800;color:{{ r.rankColor }}">{{ r.rank }}</span>
+          <span style="font-family:'Noto Sans TC',sans-serif;font-weight:700;font-size:14px">{{ r.name }}</span>
+          <span style="text-align:right;font-weight:800">{{ r.wl }}</span>
+          <span style="text-align:right">{{ r.pf }}</span>
+          <span style="text-align:right;color:#9AA9BD">{{ r.diff }}</span>
+        </div>
+      </sc-for>
+      <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 16px;border-top:1px solid #1E3150;font-size:13px;color:#6B7C93">尚未登錄比分</div>
+      </sc-if>
+    </section>
+  </sc-for>
+</sc-if>
+
+</main>
+
+<nav style="position:sticky;bottom:0;background:#0A1422;border-top:1px solid #1E3150;display:grid;grid-template-columns:repeat(5,1fr)">
+  <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+    <button onClick="{{ t.onClick }}" style="min-height:58px;background:transparent;border:none;border-top:3px solid {{ t.bar }};color:{{ t.color }};font-weight:700;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:.12em">{{ t.en }}</span>
+      <span>{{ t.label }}</span>
+    </button>
+  </sc-for>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;capAB&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;min&quot;:4,&quot;max&quot;:8,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;A/B場&quot;},&quot;gamesAB&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:8,&quot;min&quot;:4,&quot;max&quot;:16,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;A/B場&quot;}}">
+const KEY = 'ljd-pickle-v1';
+
+/* ===================== Google 試算表後台 =====================
+   把 Apps Script 部署後拿到的「網頁應用程式」網址貼進 API_URL（結尾是 /exec）。
+   留空＝完全離線模式，行為跟加後台之前一模一樣，所以貼錯或還沒部署都不會讓頁面壞掉。
+   後端程式與部署步驟在 apps-script/ 資料夾。 */
+const API_URL = '';
+const TOKEN_KEY = 'ljd-pickle-token';     // 管理密碼：解鎖一次就記在這支手機上
+const DEVICE_KEY = 'ljd-pickle-device';   // 裝置代號：用來判斷「這筆報名是我自己報的」
+
+const ls = {
+  get: k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+// 裝置代號只是「同一支手機」的憑據，不是身分認證——真正的管理權還是看密碼
+const deviceId = () => {
+  let d = ls.get(DEVICE_KEY);
+  if (!d) { d = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); ls.set(DEVICE_KEY, d); }
+  return d;
+};
+
+// 刻意不設 Content-Type：fetch 對字串 body 會自動用 text/plain，屬於 CORS 安全名單，
+// 不會觸發 preflight。設成 application/json 的話瀏覽器會先發 OPTIONS，而 Apps Script
+// 不處理 OPTIONS，整個請求就會失敗。
+// 比分是一個字一個字打出來的（打「11」會觸發兩次），每個按鍵都呼叫一次 Apps Script
+// 會排隊排到爆，所以同一格停手之後才真正送出
+const laterTimers = {};
+const sendLater = (id, fn, ms = 700) => { clearTimeout(laterTimers[id]); laterTimers[id] = setTimeout(fn, ms); };
+
+const api = (action, payload) => {
+  if (!API_URL) return Promise.reject(new Error('尚未設定試算表網址（API_URL）'));
+  return fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, ...payload }) })
+    .then(r => r.text())
+    .then(text => {
+      let j;
+      try { j = JSON.parse(text); }
+      catch (e) { throw new Error('試算表回傳的不是 JSON，通常是部署時「誰可以存取」沒設成「任何人」'); }
+      if (!j || !j.ok) throw new Error((j && j.error) || '試算表回報了未知的錯誤');
+      return j;
+    });
+};
+
+const DEMO = [['阿凱','M',3.4,'auto'],['Jason','M',3.1,'auto'],['小安','F',3.0,'auto'],['大熊','M',3.6,'auto'],['Mia','F',3.2,'auto'],['老陳','M',3.0,'auto'],['Kevin','M',3.3,'auto'],
+['小芸','F',2.7,'C'],['佩佩','F',2.6,'C'],['Ruby','F',2.8,'C'],['阿哲','M',2.7,'C'],['小胖','M',2.5,'C'],['Leo','M',2.9,'C'],['Yuki','F',2.9,'C'],['阿宏','M',2.6,'C'],
+['志明','M',2.8,'auto'],['春嬌','F',2.6,'C'],['阿德','M',2.5,'auto'],['小美','F',2.7,'C'],['Tina','F',2.9,'C'],['阿Ben','M',2.8,'auto'],['Olivia','F',2.5,'auto'],['小琪','F',2.8,'auto'],['Amy','F',2.6,'auto']];
+const ACC = { A: '#FF5A36', B: '#3FD0C9', C: '#B98CFF' };
+// DUPR 的有效範圍只定義在這裡：輸入欄的 min/max、驗證、錯誤訊息全部由此產生，避免三處各說各話
+const DUPR_MIN = 2, DUPR_MAX = 8;
+const DUPR_HINT = `DUPR 請輸入 ${DUPR_MIN.toFixed(1)}–${DUPR_MAX.toFixed(1)}`;
+const C_INFO = {
+  rr: { title: '8人循環單打＆混雙', rule: '4男4女循環賽制，單打與混雙交替，人人都有豐富出賽場次。', cap: 8, target: 11 },
+  rotate: { title: '女雙「拆夥不拆情」旋轉搭檔', rule: '8位女生不固定搭檔，共7輪，每人與其他7人各搭檔一次。搶9分，計個人勝場與總得分。', cap: 8, target: 9 },
+  pk: { title: '閨蜜女雙 PK 賽', rule: '2人一組共4組（依報名順序兩兩成組），單循環賽＋冠亞軍決賽。', cap: 8, target: 11 },
+  train4: { title: '4人主題訓練（精緻進階）', rule: '限額4人，輪換搭檔進行主題技術訓練。', cap: 4, target: 11 }
+};
+const demoPlayers = () => DEMO.map((d, i) => ({ id: i + 1, name: d[0], gender: d[1], dupr: d[2], pref: d[3] }));
+const START_DEFAULT = '2026-10-02';
+const SESSION_COUNT = 8;
+// 場地時間 19:00–21:00。每局時間用實際打球的經驗值，不是把 120 分鐘硬除以局數——
+// 硬除會排出「每局 8 分鐘打完搶 9 分」這種對不上現場的時間表
+const SESSION_MINS = 120, START_HOUR = 19;
+const minsPerGame = target => target >= 11 ? 15 : 11;
+// 場地時間放得下幾局。A/B 場的預設局數與 C 場循環賽都由這裡算，不要兩邊各寫一個數字
+const gamesFor = target => Math.floor(SESSION_MINS / minsPerGame(target));
+const clockAt = mins => `${START_HOUR + Math.floor(mins / 60)}:${String(mins % 60).padStart(2, '0')}`;
+const isoOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const dateOf = iso => { const [y, m, d] = String(iso).split('-').map(Number); return new Date(y, m - 1, d); };
+// 每個吃日期的地方都要先過這裡。Invalid Date 的 getDay() 是 NaN，會讓 fridaysFrom 的
+// while 永遠跑不完、整頁當掉；而 startDate 會寫進 localStorage，一次壞掉就變成每次開啟
+// 都當掉、只能清存檔才救得回來。繞回 isoOf 比對可以同時擋掉 2026-02-30（會自動進位成
+// 3/2）和 0099-01-01（兩位數年份會被 Date 當成 1999）這類「格式對但不是那一天」的值。
+const isoLike = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+const isIso = s => { if (!isoLike(s)) return false; const d = dateOf(s); return !isNaN(d.getTime()) && isoOf(d) === s; };
+// 從 startDate 起算的連續週五；startDate 不是週五就先推到最近的週五
+const fridaysFrom = (startDate, n) => {
+  const s = dateOf(isIso(startDate) ? startDate : START_DEFAULT);
+  while (s.getDay() !== 5) s.setDate(s.getDate() + 1);
+  return Array.from({ length: n }, (_, i) => { const x = new Date(s); x.setDate(s.getDate() + i * 7); return x; });
+};
+// 名單依場次分開存：rosters[ISO日期] = 該場的報名名單。選中的場次用日期而非索引記，
+// 場次清單長短變動時才不會指到別一場
+const defaults = () => ({ startDate: START_DEFAULT, sessionDate: isoOf(fridaysFrom(START_DEFAULT, 1)[0]), rosters: { [isoOf(fridaysFrom(START_DEFAULT, 1)[0])]: demoPlayers() }, nextId: DEMO.length + 1, scores: {}, tab: 'courts', schedCourt: 'A', form: { name: '', gender: 'M', dupr: '2.7', pref: 'auto' }, formError: '', confirmAct: '', copyKind: '', copyStatus: '', moveNote: '',
+  // 後台相關的狀態一律不寫進 localStorage（除了密碼另外存），重開頁面要重新確認連線
+  cloud: API_URL ? 'loading' : 'off', cloudMsg: '', pending: [], askToken: false, tokenInput: '', capAB: 0, gamesAB: 0 });
+const pk = (a, b) => a < b ? a + '_' + b : b + '_' + a;
+// 一方人馬的身分：排序後的球友 id，和他們排在第幾局無關。空陣列（如未定的冠亞軍決賽）為 '-'
+const sideKey = ids => ids && ids.length ? [...ids].sort((a, b) => a - b).join('.') : '-';
+
+function genDoubles(ids, G) {
+  if (ids.length < 4) return [];
+  const cnt = {}, last = {}, pc = {}, out = [];
+  ids.forEach(id => { cnt[id] = 0; last[id] = -1; });
+  for (let g = 0; g < G; g++) {
+    const [a, b, c, d] = [...ids].sort((x, y) => cnt[x] - cnt[y] || last[x] - last[y] || ids.indexOf(x) - ids.indexOf(y));
+    const opts = [[[a, b], [c, d]], [[a, c], [b, d]], [[a, d], [b, c]]];
+    let best = opts[0], bs = 1e9;
+    opts.forEach(o => { const s = (pc[pk(...o[0])] || 0) + (pc[pk(...o[1])] || 0); if (s < bs) { bs = s; best = o; } });
+    best.forEach(t => pc[pk(...t)] = (pc[pk(...t)] || 0) + 1);
+    [a, b, c, d].forEach(x => { cnt[x]++; last[x] = g; });
+    out.push({ t: best[0], u: best[1], label: '輪替雙打' });
+  }
+  return out;
+}
+// 「循環」要名符其實，就得同時記搭檔過誰（pc）和對打過誰（oc）。
+// 只記 pc、選人只看出賽次數的話，4 男的男單永遠只會排出其中 2 種配對並重複，
+// 1 vs 3、1 vs 4 一輩子碰不到；混雙也會因為每次都挑「出賽最少的 2 個男生」
+// 再把他們拆到對立兩邊，變成同樣那兩人一直互為對手。
+function genRR(ms, ws, G) {
+  const all = [...ms, ...ws], cnt = {}, last = {}, pc = {}, oc = {}, out = [];
+  all.forEach(id => { cnt[id] = 0; last[id] = -1; });
+  const n = (tab, a, b) => tab[pk(a, b)] || 0;
+  const inc = (tab, a, b) => { tab[pk(a, b)] = n(tab, a, b) + 1; };
+  const pairsOf = arr => { const r = []; for (let i = 0; i < arr.length; i++) for (let j = i + 1; j < arr.length; j++) r.push([arr[i], arr[j]]); return r; };
+  // 依序比較評分向量，第一個分出高下的欄位就決定選哪個方案（越小越好）
+  const best = cands => cands.reduce((a, b) => {
+    for (let i = 0; i < a.score.length; i++) if (a.score[i] !== b.score[i]) return a.score[i] < b.score[i] ? a : b;
+    return a;
+  });
+  for (let g = 0; g < G; g++) {
+    const types = g % 2 === 0 ? ['mix', 'MS', 'WS'] : (g % 4 === 1 ? ['MS', 'WS', 'mix'] : ['WS', 'MS', 'mix']);
+    const type = types.find(t => t === 'mix' ? ms.length >= 2 && ws.length >= 2 : (t === 'MS' ? ms.length >= 2 : ws.length >= 2));
+    if (!type) break;
+    let t, u, label, used;
+    if (type === 'mix') {
+      // 混雙佔了一半局數，所以先顧出賽次數平均，再挑重複最少的搭檔／對手組合
+      const cands = [];
+      pairsOf(ms).forEach(([m1, m2]) => pairsOf(ws).forEach(([w1, w2]) => {
+        [[[m1, w1], [m2, w2]], [[m1, w2], [m2, w1]]].forEach(([x, y]) => cands.push({ x, y, score: [
+          cnt[m1] + cnt[m2] + cnt[w1] + cnt[w2],
+          n(pc, x[0], x[1]) + n(pc, y[0], y[1]) + n(oc, x[0], y[0]) + n(oc, x[0], y[1]) + n(oc, x[1], y[0]) + n(oc, x[1], y[1]),
+          last[m1] + last[m2] + last[w1] + last[w2]
+        ] }));
+      }));
+      const b = best(cands);
+      t = b.x; u = b.y;
+      inc(pc, t[0], t[1]); inc(pc, u[0], u[1]);
+      t.forEach(a => u.forEach(c => inc(oc, a, c)));
+      label = '混雙'; used = [...t, ...u];
+    } else {
+      // 一樣是出賽次數優先、重複對手次之。實測 4 男 4 女跑 8 局時，
+      // 這個順序能讓每人出賽數完全相同（各 3 局）又不重複任何一組單打對戰；
+      // 反過來把「沒對打過」擺第一的話，會有人打 4 局、有人只打 2 局。
+      const pool = type === 'MS' ? ms : ws;
+      const b = best(pairsOf(pool).map(([x, y]) => ({ x: [x], y: [y], score: [cnt[x] + cnt[y], n(oc, x, y), last[x] + last[y]] })));
+      t = b.x; u = b.y;
+      inc(oc, t[0], u[0]);
+      label = type === 'MS' ? '男單' : '女單'; used = [t[0], u[0]];
+    }
+    used.forEach(x => { cnt[x]++; last[x] = g; });
+    out.push({ t, u, label });
+  }
+  return out;
+}
+function genRotate(ids) {
+  if (ids.length < 8) return [];
+  const out = [];
+  for (let r = 0; r < 7; r++) {
+    const p = [[ids[7], ids[r]]];
+    for (let k = 1; k <= 3; k++) p.push([ids[(r + k) % 7], ids[(r - k + 7) % 7]]);
+    out.push({ t: p[0], u: p[1], label: `第${r + 1}輪 · 抽籤搭檔` });
+    out.push({ t: p[2], u: p[3], label: `第${r + 1}輪 · 抽籤搭檔` });
+  }
+  return out;
+}
+// 一場合法的匹克球比分：先達目標分、且淨勝 2 分。10:10 之後要繼續打到淨勝 2 分，
+// 所以勝方超過目標分時差距必定正好是 2（11:10、15:5、3:1、平手都不是完賽比分）。
+// 回傳空字串＝合法，否則是要顯示給使用者的原因。
+const scoreError = (a, b, target) => {
+  if (!Number.isInteger(a) || !Number.isInteger(b) || a < 0 || b < 0) return '比分請填 0 以上的整數';
+  const hi = Math.max(a, b), lo = Math.min(a, b);
+  if (hi < target) return `尚未打到 ${target} 分`;
+  if (hi - lo < 2) return hi === lo ? '平手不是完賽比分，要打到淨勝 2 分' : '要淨勝 2 分才算完賽';
+  if (hi > target && hi - lo > 2) return `超過 ${target} 分之後只能以淨勝 2 分結束`;
+  return '';
+};
+function tally(matches, unitA, unitB) {
+  const st = {};
+  const add = (k, pf, pa, w) => { const s = st[k] || (st[k] = { w: 0, l: 0, pf: 0, pa: 0 }); s.pf += pf; s.pa += pa; w ? s.w++ : s.l++; };
+  matches.forEach(m => {
+    if (!m.valid) return;   // 不合法的比分一律不計入戰績（valid 由 mk() 用 scoreError 判定）
+    const a = +m.sa, b = +m.sb;
+    unitA(m).forEach(k => add(k, a, b, a > b)); unitB(m).forEach(k => add(k, b, a, b > a));
+  });
+  return st;
+}
+const sortSt = st => Object.keys(st).sort((x, y) => st[y].w - st[x].w || (st[y].pf - st[y].pa) - (st[x].pf - st[x].pa) || st[y].pf - st[x].pf);
+
+class Component extends DCLogic {
+  state = this.load();
+  load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY));
+      if (s && (s.rosters || s.players)) {
+        const st = { ...defaults(), ...s, formError: '', confirmAct: '', copyStatus: '', moveNote: '' };
+        if (!s.rosters) {
+          // 舊版只有一份全域名單，掛到首發那一場；其餘場次從空的開始
+          st.rosters = { [isoOf(fridaysFrom(st.startDate, 1)[0])]: s.players || [] };
+        }
+        delete st.players; delete st.week2Mode; delete st.sessionIdx;
+        // 存檔有可能是手改過或舊版寫壞的，日期一律重新驗證過才敢用
+        if (!isIso(st.startDate)) st.startDate = START_DEFAULT;
+        const fr = fridaysFrom(st.startDate, SESSION_COUNT).map(isoOf);
+        // 注意要看原始存檔的 s.sessionDate：st 已經被 defaults() 填過，永遠是 truthy
+        if (!isIso(s.sessionDate)) st.sessionDate = fr[Math.min(s.sessionIdx || 0, fr.length - 1)];
+        // nextId 必須大於所有已存在的 id，否則新報名的人會跟舊的人撞號、
+        // 刪一個會連帶刪掉另一個。開檔時先自我修正，不要只依賴寫入端。
+        const maxId = Object.values(st.rosters || {}).reduce((m, list) => (list || []).reduce((n, p) => Math.max(n, p && Number.isInteger(p.id) ? p.id : 0), m), 0);
+        st.nextId = Math.max(Number.isInteger(st.nextId) ? st.nextId : 1, maxId + 1);
+        return st;
+      }
+    } catch (e) {}
+    return defaults();
+  }
+  upd(patch) {
+    this.setState(patch, () => {
+      const { startDate, sessionDate, rosters, nextId, scores, tab, schedCourt } = this.state;
+      try { localStorage.setItem(KEY, JSON.stringify({ startDate, sessionDate, rosters, nextId, scores, tab, schedCourt })); } catch (e) {}
+    });
+  }
+
+  /* ---------------- 試算表後台 ----------------
+     設計前提：試算表是唯一真相，localStorage 退化成「上次看到的樣子」的離線快取。
+     所以每個寫入動作都是：本機先改（畫面立刻有反應）→ 送到試算表 → 用試算表回傳的
+     權威版本覆蓋本機。id 一律由伺服器發號，兩邊才不會各編一套。 */
+
+  componentDidMount() { if (API_URL) this.pull(); }
+
+  token() { return ls.get(TOKEN_KEY); }
+
+  /** 把伺服器回傳的資料收進本機。load 回的是全部場次，寫入動作回的是單一場次。 */
+  adopt(j) {
+    const patch = { cloud: 'ok', cloudMsg: '' };
+    if (j.full) {
+      if (j.rosters) patch.rosters = j.rosters;
+      if (j.scores) patch.scores = j.scores;
+      if (isIso(j.startDate)) patch.startDate = j.startDate;
+      if (j.capAB) patch.capAB = j.capAB;
+      if (j.gamesAB) patch.gamesAB = j.gamesAB;
+    } else if (j.session) {
+      patch.rosters = { ...this.state.rosters, [j.session]: j.roster || [] };
+      // 該場次的比分整批換掉（不能只 merge，否則伺服器端刪掉的比分會留在本機）
+      const kept = {};
+      Object.keys(this.state.scores).forEach(k => { if (k.indexOf(j.session + '|') !== 0) kept[k] = this.state.scores[k]; });
+      patch.scores = { ...kept, ...(j.scores || {}) };
+    }
+    this.upd(patch);
+  }
+
+  /** 從試算表拉最新的；成功之後把離線期間累積的待送動作依序補送。 */
+  pull() {
+    if (!API_URL) return Promise.resolve();
+    this.setState({ cloud: 'loading', cloudMsg: '' });
+    return api('load', {})
+      .then(j => { this.adopt(j); return this.flush(); })
+      .catch(err => this.setState({ cloud: 'error', cloudMsg: '讀取失敗：' + err.message }));
+  }
+
+  /** 送出一個寫入動作。本機已經改好了，這裡只負責同步與失敗時排進待送佇列。 */
+  send(action, payload) {
+    if (!API_URL) return Promise.resolve();
+    this.setState({ cloud: 'saving', cloudMsg: '' });
+    return api(action, { ...payload, token: this.token(), device: deviceId() })
+      .then(j => this.adopt(j))
+      .catch(err => {
+        // 密碼錯誤重送幾次都一樣，排進佇列只會變成一直失敗，所以不排，直接叫出解鎖框
+        const badPw = /密碼/.test(err.message);
+        // 用 updater 形式讀 prev，兩個請求同時失敗時才不會有一筆被覆蓋掉
+        this.setState(prev => ({
+          cloud: 'error', cloudMsg: err.message,
+          pending: badPw ? prev.pending : [...prev.pending, { action, payload }],
+          askToken: badPw ? true : prev.askToken
+        }));
+      });
+  }
+
+  /** 依序補送待送佇列；中途失敗就停下來，剩下的留著下次再試。 */
+  flush() {
+    const queue = this.state.pending;
+    if (!queue.length) return Promise.resolve();
+    this.setState({ pending: [] });
+    return queue.reduce((chain, job) => chain.then(() => this.send(job.action, job.payload)), Promise.resolve());
+  }
+  // 場次清單＝首發起算的 8 週，聯集所有「已經有名單或比分」的場次。
+  // 改首發日期因此不會讓歷史場次從畫面上消失（D4）
+  fridays() {
+    const S = this.state;
+    const keep = new Set(fridaysFrom(S.startDate, SESSION_COUNT).map(isoOf));
+    Object.keys(S.rosters || {}).forEach(k => { if ((S.rosters[k] || []).length) keep.add(k); });
+    Object.keys(S.scores || {}).forEach(k => keep.add(k.split('|')[0]));
+    // 光檢查格式不夠：2026-99-99 格式對但 dateOf 會得到 Invalid Date，整排場次就變成 NaN/NaN
+    return [...keep].filter(isIso).sort().map(dateOf);
+  }
+  allocate(players, cMode, capAB) {
+    const R = { A: [], B: [], C: [], W: [] }, info = C_INFO[cMode];
+    const space = (c, p) => {
+      if (c === 'A' || c === 'B') return R[c].length < capAB;
+      if (c !== 'C') return false;   // 以下幾行只看 cMode 不看 c，少了這道防線 R[c].push 會直接拋錯
+      if (cMode === 'rr') return R.C.filter(x => x.gender === p.gender).length < 4;
+      if (cMode === 'rotate' || cMode === 'pk') return p.gender === 'F' && R.C.length < 8;
+      return R.C.length < info.cap;
+    };
+    // 這個場地為什麼進不去。null＝單純人數額滿；字串＝結構性限制（當週賽制或性別名額），
+    // 兩者要分開講，否則女雙週的男生會看到「C場已滿」而不是「本週C場限女生」。
+    const why = (c, p) => {
+      if (c === 'A' || c === 'B') return null;
+      if (cMode === 'rr') return `C場${p.gender === 'M' ? '男' : '女'}生名額已滿`;
+      if (cMode === 'rotate' || cMode === 'pk') return p.gender === 'F' ? null : '本週C場限女生';
+      return 'C場限額 4 人已滿';
+    };
+    players.forEach(p => {
+      // ACC 的鍵就是場地代號；pref 不是 A/B/C 時（例如存檔壞掉）當成「自動」處理
+      const pref = ACC[p.pref] ? p.pref : 'auto';
+      // 須知 2：選「自動」者 3.0 以上先排 A 場、2.5–2.9 先排 B 場，額滿都依序往下一個場地遞補
+      const tries = pref === 'auto' ? (p.dupr >= 3 ? ['A', 'B', 'C'] : ['B', 'C']) : [pref];
+      const c = tries.find(t => space(t, p));
+      if (c) { R[c].push(p); return; }
+      const full = [], blocked = [];
+      tries.forEach(t => { const r = why(t, p); if (r === null) full.push(t); else blocked.push(r); });
+      const parts = full.length ? [full.join('、') + '場已滿'] : [];
+      R.W.push({ ...p, reason: parts.concat(blocked).join('；') });
+    });
+    return R;
+  }
+  renderVals() {
+    // gamesAB 的預設＝場地時間放得下的局數（120 ÷ 每局 15 分鐘），而不是憑感覺的 12。
+    // 試算表的「設定」工作表優先，沒有後台時才用元件 props。
+    const S = this.state;
+    const capAB = S.capAB || (this.props.capAB ?? 6);
+    const gamesAB = S.gamesAB || (this.props.gamesAB ?? gamesFor(11));
+    const myDevice = API_URL ? deviceId() : '';   // 只讀一次，不要每個名單列都去碰 localStorage
+    const fr = this.fridays();
+    const dateKey = fr.some(d => isoOf(d) === S.sessionDate) ? S.sessionDate : isoOf(fr[0]);
+    const date = dateOf(dateKey), idx = fr.findIndex(d => isoOf(d) === dateKey);
+    const md = d => `${d.getMonth() + 1}/${String(d.getDate()).padStart(2, '0')}`;
+    const wk = Math.ceil(date.getDate() / 7);
+    const cMode = wk === 2 ? 'rotate' : (wk === 4 ? 'train4' : (wk === 5 ? 'pk' : 'rr'));
+    const cInfo = C_INFO[cMode];
+    const roster = S.rosters[dateKey] || [];
+    const R = this.allocate(roster, cMode, capAB);
+    const byId = {}; roster.forEach(p => byId[p.id] = p);
+    const nm = ids => ids.map(i => byId[i]?.name || '?').join(' / ');
+    const gTxt = g => g === 'M' ? '男' : '女', gCol = g => g === 'M' ? '#7FB2FF' : '#FF8FC0';
+    // 所有改動名單的 handler 都讀 this.state（而非 render 當時捕捉的 S），否則連點兩次會互相覆蓋
+    const liveRoster = () => this.state.rosters[dateKey] || [];
+    const setRoster = (list, extra) => this.upd({ rosters: { ...this.state.rosters, [dateKey]: list }, ...extra });
+    // 有後台但還沒解鎖時，管理動作先不要動本機資料——本機改了伺服器卻拒絕，
+    // 兩邊就會不一致，而且使用者會以為成功了
+    // 解鎖框放在全頁共用的狀態條裡，所以不用把人拉回別的頁籤
+    const needAdmin = msg => {
+      if (!API_URL || this.token()) return false;
+      this.setState({ askToken: true, cloudMsg: msg + '需要管理密碼' });
+      return true;
+    };
+    // 手動換場可能失敗（目標場已滿或當週賽制不收），也可能把別人擠出去。
+    // 原本兩種情況都是靜默的，看起來像「按了沒反應」，所以這裡把結果講出來。
+    const courtMap = alloc => { const m = {}; ['A', 'B', 'C'].forEach(k => alloc[k].forEach(p => m[p.id] = k)); return m; };
+    const setPref = (id, pref) => {
+      const next = liveRoster().map(p => p.id === id ? { ...p, pref } : p);
+      const after = this.allocate(next, cMode, capAB), was = courtMap(R), now = courtMap(after);
+      const me = next.find(p => p.id === id);
+      let note = '';
+      if (now[id] !== pref) {
+        const w = after.W.find(p => p.id === id);
+        note = w ? `${me.name} 進不了 ${pref} 場：${w.reason}，已改列候補`
+          : `${me.name} 進不了 ${pref} 場，已改排到 ${now[id]} 場`;
+      }
+      const bumped = next.filter(p => p.id !== id && was[p.id] && was[p.id] !== now[p.id]);
+      if (bumped.length) {
+        const where = k => k ? k + '場' : '候補';
+        const names = bumped.map(p => `${p.name}（${where(was[p.id])} → ${where(now[p.id])}）`).join('、');
+        note = (note ? note + '；' : `${me.name} 已移到 ${pref} 場；`) + `連帶變動：${names}`;
+      }
+      setRoster(next, { moveNote: note });
+    };
+    const chips = (p, cur) => ['A', 'B', 'C'].map(l => ({ l, onClick: () => setPref(p.id, l), bg: cur === l ? ACC[l] : 'transparent', color: cur === l ? '#0E1A2B' : ACC[l], border: ACC[l] }));
+    const courtOf = {}; ['A', 'B', 'C'].forEach(c => R[c].forEach(p => courtOf[p.id] = c));
+
+    // schedules
+    const ids = c => R[c].map(p => p.id);
+    const mk = (court, list, target) => {
+      const step = minsPerGame(target);   // 用實際打一局要多久來排時間，不是把場地時間硬除以局數
+      const seen = {};
+      return list.map((mRaw, i) => {
+        // 比分要跟著「人」而不是跟著局數序號：名單一變動賽程就整批重排，
+        // 用序號當 key 會讓已登錄的分數掛到別人身上。
+        // 先把對戰方向固定下來（身分較小的一方永遠在左），左右兩欄才會穩定對應同一組人。
+        let m = mRaw;
+        if (m.t.length && m.u.length && sideKey(m.t) > sideKey(m.u)) {
+          m = { ...m, t: m.u, u: m.t };
+          if (mRaw.ti !== undefined) { m.ti = mRaw.ui; m.ui = mRaw.ti; }
+        }
+        const pair = `${sideKey(m.t)}~${sideKey(m.u)}`;
+        const seq = seen[pair] = (seen[pair] || 0) + 1; // 同一組人馬在同場次重複對戰時的第幾次
+        const key = `${dateKey}|${court}|${pair}#${seq}`, sc = S.scores[key] || ['', ''];
+        const mins = i * step, a = sc[0], b = sc[1];
+        const both = a !== '' && b !== '' && a != null && b != null;
+        const err = both ? scoreError(Number(a), Number(b), target) : '';
+        const valid = both && !err;
+        const setS = (j) => e => {
+          const v = e.target.value;
+          if (needAdmin('登錄比分')) return;
+          const cur = [...(this.state.scores[key] || ['', ''])]; cur[j] = v;
+          this.upd({ scores: { ...this.state.scores, [key]: cur } });
+          // 停手之後才送，而且送的時候重新讀一次 state，確保送出去的是最新的兩欄
+          sendLater(key, () => {
+            const now = this.state.scores[key] || ['', ''];
+            this.send('setScore', { session: dateKey, court, key, a: now[0], b: now[1] });
+          });
+        };
+        return { ...m, key, no: i + 1, time: clockAt(mins), target, sa: a, sb: b, onA: setS(0), onB: setS(1), err, valid,
+          tName: m.tName || nm(m.t), uName: m.uName || nm(m.u),
+          aColor: valid ? (+a > +b ? '#D7F54A' : '#9AA9BD') : '#F3F6FA', bColor: valid ? (+b > +a ? '#D7F54A' : '#9AA9BD') : '#F3F6FA' };
+      });
+    };
+    const schedA = mk('A', genDoubles(ids('A'), gamesAB), 11);
+    const schedB = mk('B', genDoubles(ids('B'), gamesAB), 11);
+    let cList = [], teams = null, cMissing = '', oddId = null;
+    const cm = R.C.filter(p => p.gender === 'M').map(p => p.id), cw = R.C.filter(p => p.gender === 'F').map(p => p.id);
+    if (cMode === 'rr') { cList = genRR(cm, cw, gamesFor(cInfo.target)); if (cm.length < 4 || cw.length < 4) cMissing = `尚缺 ${Math.max(0, 4 - cm.length)} 男 ${Math.max(0, 4 - cw.length)} 女即可滿額開賽`; }
+    else if (cMode === 'rotate') { cList = genRotate(ids('C')); if (R.C.length < 8) cMissing = `旋轉搭檔需滿 8 位女生，尚缺 ${8 - R.C.length} 位`; }
+    else if (cMode === 'pk') {
+      const c = ids('C'); teams = [];
+      for (let i = 0; i + 1 < c.length; i += 2) teams.push([c[i], c[i + 1]]);
+      // 人數是奇數時，最後一位湊不成組。原本會被無聲丟掉，但她在分場頁明明顯示已進 C 場
+      if (c.length % 2) oddId = c[c.length - 1];
+      if (teams.length === 4) {
+        [[0, 1, 2, 3], [0, 2, 1, 3], [0, 3, 1, 2]].forEach((o, r) => { cList.push({ t: teams[o[0]], u: teams[o[1]], ti: o[0], ui: o[1], label: `循環賽 R${r + 1}` }); cList.push({ t: teams[o[2]], u: teams[o[3]], ti: o[2], ui: o[3], label: `循環賽 R${r + 1}` }); });
+      } else {
+        cMissing = `需滿 4 組（8 人），目前 ${teams.length} 組`;
+        if (oddId) cMissing += `；${byId[oddId]?.name || '最後一位'} 尚未成組，請再找一位一起報名`;
+      }
+    } else {
+      const c = ids('C');
+      if (c.length === 4) { const [a, b, d, e] = c; const o = [[[a, b], [d, e]], [[a, d], [b, e]], [[a, e], [b, d]]]; [...o, ...o].forEach(x => cList.push({ t: x[0], u: x[1], label: '主題訓練 · 輪換搭檔' })); }
+      else cMissing = `限額 4 人，目前 ${c.length} 人`;
+    }
+    let schedC = mk('C', cList, cInfo.target);
+    let finalOrder = null;
+    if (cMode === 'pk' && schedC.length) {
+      // 種子序只看循環賽（此時 schedC 還沒接上決賽），決賽自己的比分才不會回頭改變決賽的對手
+      const doneAll = schedC.every(m => m.valid);
+      const order = sortSt(tally(schedC, m => [m.ti], m => [m.ui])).map(Number);
+      // final 旗標讓戰績頁認得出這一局不屬於循環賽
+      const fin = doneAll && order.length >= 2
+        ? { t: teams[order[0]], u: teams[order[1]], ti: order[0], ui: order[1], final: true, label: '冠亞軍決賽' }
+        : { t: [], u: [], ti: -1, ui: -1, tName: '循環賽第 1 名', uName: '循環賽第 2 名', final: true, label: '冠亞軍決賽' };
+      schedC = mk('C', [...cList, fin], cInfo.target);
+      const f = schedC[schedC.length - 1];
+      // 冠亞軍由決賽勝負決定，不是循環賽積分最高的那一組
+      if (f.valid && f.ti >= 0) finalOrder = (+f.sa > +f.sb ? [f.ti, f.ui] : [f.ui, f.ti]).map(String);
+    }
+    const scheds = { A: schedA, B: schedB, C: schedC };
+
+    const courtMeta = {
+      A: { name: '極限挑戰場', level: '建議 DUPR 3.0+ · 輪替雙打', desc: '高節奏對戰與技術切磋。熟悉切球、廚房區 dink / speed up 戰術、具比賽經驗者。' },
+      B: { name: '友善歡樂場', level: '建議 DUPR 2.5–2.9 · 歡樂輪替', desc: '友善交流、順暢拉拍與雙打配合。掌握基本發球、接發球，想找同級球友穩健流汗。' },
+      C: { name: cInfo.title, level: `建議 DUPR 2.5–2.9 · 第${wk}週主題`, desc: cInfo.rule }
+    };
+    const courts = ['A', 'B', 'C'].map(c => {
+      const cap = c === 'C' ? cInfo.cap : capAB, list = R[c];
+      let note = '';
+      if (c === 'C') note = cMissing || (cMode === 'rr' ? `男 ${cm.length}/4 · 女 ${cw.length}/4` : '');
+      if (c !== 'C' && list.length > 0 && list.length < 4) note = '不足 4 人，無法開雙打';
+      return { letter: c, name: c + '場｜' + courtMeta[c].name, level: courtMeta[c].level, desc: courtMeta[c].desc, accent: ACC[c], count: list.length, cap,
+        pct: Math.min(100, list.length / cap * 100) + '%', note, empty: list.length === 0,
+        players: list.map(p => ({ name: p.name, gtxt: gTxt(p.gender), gColor: gCol(p.gender), dupr: p.dupr.toFixed(1), chips: chips(p, c),
+          warn: p.id === oddId ? '未成組' : (c === 'A' && p.dupr < 3 ? '低於建議' : (c !== 'A' && p.dupr >= 3 ? '高於建議' : '')) })) };
+    });
+    const waitlist = R.W.map(p => ({ name: p.name, gtxt: gTxt(p.gender), gColor: gCol(p.gender), dupr: p.dupr.toFixed(1), reason: p.reason, chips: chips(p, '') }));
+
+    const standings = ['A', 'B', 'C'].map(c => {
+      let rows;
+      if (c === 'C' && cMode === 'pk' && teams) {
+        // 決賽不計入循環賽積分。原本算進去的話，決賽的比分會反過來改寫這張表，
+        // 出現「決賽輸的那一組因為淨分高還是排第 1」這種結果。
+        const st = tally(scheds.C.filter(m => m.ti >= 0 && !m.final), m => [m.ti], m => [m.ui]);
+        let keys = sortSt(st);
+        // 決賽打完就以決賽結果定冠亞軍，第 3 名之後照循環賽排
+        if (finalOrder) keys = [...finalOrder, ...keys.filter(k => !finalOrder.includes(k))].filter(k => st[k]);
+        rows = keys.map((k, i) => ({ rank: i + 1, name: nm(teams[k]) + (finalOrder ? (i === 0 ? ' 🏆 冠軍' : i === 1 ? ' 亞軍' : '') : ''), s: st[k] }));
+      } else {
+        const st = tally(scheds[c], m => m.t, m => m.u);
+        rows = sortSt(st).map((k, i) => ({ rank: i + 1, name: byId[k]?.name || '?', s: st[k] }));
+      }
+      // s0 留著原始的勝敗與得失分，推送到試算表的報表時要用（畫面上只用格式化過的欄位）
+      rows = rows.map(r => ({ rank: r.rank, name: r.name, wl: `${r.s.w}-${r.s.l}`, pf: r.s.pf, diff: (r.s.pf - r.s.pa > 0 ? '+' : '') + (r.s.pf - r.s.pa), rankColor: r.rank === 1 ? '#D7F54A' : '#9AA9BD', s0: r.s }));
+      // 欄位標題講清楚勝敗／得分是循環賽的，排名才不會看起來跟數字矛盾
+      return { letter: c, name: c === 'C' ? cInfo.title : courtMeta[c].name, accent: ACC[c], rows, empty: rows.length === 0, unit: c === 'C' && cMode === 'pk' ? '組別（以下為循環賽）' : '球友' };
+    });
+
+    const on = (a, b) => a === b;
+    const tabs = [['info', '說明', 'INFO'], ['signup', '報名', 'JOIN'], ['courts', '分場', 'COURTS'], ['sched', '賽程', 'MATCHES'], ['rank', '戰績', 'RANK']].map(([k, label, en]) => ({
+      label, en, onClick: () => this.upd({ tab: k, confirmAct: '', copyStatus: '', moveNote: '' }), color: on(S.tab, k) ? '#D7F54A' : '#9AA9BD', bar: on(S.tab, k) ? '#D7F54A' : 'transparent' }));
+    const sc = S.schedCourt;
+    const schedTabs = ['A', 'B', 'C'].map(c => ({ label: c + ' 場', onClick: () => this.upd({ schedCourt: c, copyStatus: '' }), bg: sc === c ? ACC[c] : 'transparent', color: sc === c ? '#0E1A2B' : '#C5D0DE' }));
+    // 誠實的時間估算：局數 × 每局實際時間。超出場地時間就直說超了多少，不要排一張對不上的表
+    const timeNote = ms => {
+      if (!ms.length) return { note: '', color: '#9AA9BD' };
+      const target = sc === 'C' ? cInfo.target : 11, total = ms.length * minsPerGame(target);
+      const base = `${ms.length} 局 × 每局約 ${minsPerGame(target)} 分鐘，預估 ${clockAt(0)}–${clockAt(total)}`;
+      return total > SESSION_MINS
+        ? { note: `${base}，比場地時間多 ${total - SESSION_MINS} 分鐘，最後幾局可能打不完`, color: '#FFD27A' }
+        : { note: base, color: '#9AA9BD' };
+    };
+    const schedInfo = sc === 'C'
+      ? { title: 'C場｜' + cInfo.title, rule: cInfo.rule, missing: cMissing, matches: scheds.C, ...timeNote(scheds.C) }
+      : { title: sc + '場｜' + courtMeta[sc].name, rule: `${R[sc].length} 人輪替雙打，系統依出賽次數平均輪休、避免重複搭檔。`, missing: R[sc].length < 4 ? `目前 ${R[sc].length} 人，需至少 4 人才能排雙打` : '', matches: scheds[sc], ...timeNote(scheds[sc]) };
+
+    const f = S.form;
+    const selBtn = (on, acc) => ({ bg: on ? acc : '#0E1A2B', color: on ? '#0E1A2B' : '#C5D0DE', border: on ? acc : '#2A3F5E' });
+    const prefLabels = { auto: '自動', A: 'A場', B: 'B場', C: 'C場' };
+
+    // 清空／載入範例都會刪掉無法復原的資料，先說清楚會失去什麼再做
+    const confirmAct = S.confirmAct || '';
+    const hasVal = v => v != null && v !== '';
+    // 只數「這一場」的比分：清空與載入範例都只動當前場次，不該把別場的數字算進警告裡
+    const ofSession = k => k.indexOf(dateKey + '|') === 0;
+    // 而且只數「現在還排得出這一局」的比分。名單一改，舊的 key 就對不上任何賽程了，
+    // 這些孤兒 key 刻意留著（按錯志願換回來就能把分數接回去），但不該算進「會失去什麼」裡
+    const liveKeys = new Set([...scheds.A, ...scheds.B, ...scheds.C].map(m => m.key));
+    const scoreCount = [...liveKeys].filter(k => ofSession(k) && Array.isArray(S.scores[k]) && (hasVal(S.scores[k][0]) || hasVal(S.scores[k][1]))).length;
+    const atRisk = `${roster.length} 位球友` + (scoreCount ? `與 ${scoreCount} 筆已登錄的比分` : '');
+    const nothingToLose = roster.length === 0 && scoreCount === 0;
+    const confirmMsg = confirmAct === 'clear' ? `清空會刪掉 ${atRisk}，這個動作無法復原。`
+      : confirmAct === 'demo' ? `載入範例會覆蓋目前的 ${atRisk}，這個動作無法復原。` : '';
+    // 貼到 LINE 群用的純文字。固定團實際運作就是靠這一段，所以格式以「貼上就能發」為準
+    const headLine = `六甲頂匹克球熱血團\n${md(date)}（第${wk}週）19:00–21:00`;
+    const courtsText = [headLine, ...['A', 'B', 'C'].map(c => {
+      const list = R[c], meta = courtMeta[c], cap = c === 'C' ? cInfo.cap : capAB;
+      const head = `【${c}場】${meta.name} ${list.length}/${cap}` + (c === 'C' && cMode === 'rr' ? `（男 ${cm.length}・女 ${cw.length}）` : '');
+      if (!list.length) return `${head}\n（尚無球友）`;
+      return head + '\n' + list.map((p, i) => `${i + 1}. ${p.name}${c === 'C' ? ' ' + gTxt(p.gender) : ''} ${p.dupr.toFixed(1)}`).join('\n');
+    }), R.W.length ? `【候補】${R.W.length} 人\n` + R.W.map(p => `・${p.name} ${p.dupr.toFixed(1)} — ${p.reason}`).join('\n') : '【候補】無',
+      '※ 依報名先後順序、DUPR 與志願自動分配，有人取消會自動遞補'].join('\n\n');
+
+    const schedText = (() => {
+      const info = sc === 'C' ? { name: cInfo.title } : courtMeta[sc];
+      const ms = scheds[sc];
+      const head = `${headLine}\n【${sc}場】${info.name}`;
+      if (!ms.length) return `${head}\n${sc === 'C' ? cMissing || '尚無賽程' : `目前 ${R[sc].length} 人，需至少 4 人才能排雙打`}`;
+      return `${head}（共 ${ms.length} 局・搶 ${sc === 'C' ? cInfo.target : 11} 分）\n\n` + ms.map(m => {
+        const score = m.sa !== '' && m.sb !== '' ? `${m.sa}:${m.sb}` : '—';
+        return `${m.time} #${m.no} ${m.tName} vs ${m.uName}　${score}`;
+      }).join('\n');
+    })();
+
+    const copy = (kind, text) => () => {
+      const done = () => this.setState({ copyKind: kind, copyStatus: 'ok' });
+      const bail = () => this.setState({ copyKind: kind, copyStatus: 'fail' });
+      try {
+        const cb = navigator.clipboard;
+        if (cb && cb.writeText) cb.writeText(text).then(done, bail); else bail();
+      } catch (e) { bail(); }
+    };
+    const copyLabel = (kind, label) => S.copyStatus === 'ok' && S.copyKind === kind ? '已複製 ✓' : label;
+
+    // 只清掉這一場的名單與比分，別場的資料不動
+    const dropScores = () => { const next = {}; Object.keys(this.state.scores).forEach(k => { if (!ofSession(k)) next[k] = this.state.scores[k]; }); return next; };
+    const doClear = () => { setRoster([], { scores: dropScores(), confirmAct: '' }); this.send('clearSession', { session: dateKey }); };
+    // nextId 是所有場次共用的，所以只能往上加。直接設回 DEMO.length + 1 的話，
+    // 別的場次早就發出去的 id 會被重新發一次，之後刪一個人會連帶刪掉同號的另一個人。
+    // 有後台時 id 由伺服器重新發號，adopt() 會把這裡暫用的本機 id 換成伺服器版本。
+    const replaceWith = list => {
+      setRoster(list, { nextId: Math.max(this.state.nextId, DEMO.length + 1), scores: dropScores(), confirmAct: '' });
+      this.send('replaceRoster', { session: dateKey, players: list.map(p => ({ name: p.name, gender: p.gender, dupr: p.dupr, pref: p.pref })) });
+    };
+    const doDemo = () => replaceWith(demoPlayers());
+    // 固定團每週名單高度重疊，沒有這顆按鈕的話「名單分場次」只會變成每週重打一次
+    const prevKey = idx > 0 ? isoOf(fr[idx - 1]) : '';
+    const prevCount = prevKey ? (S.rosters[prevKey] || []).length : 0;
+    const reuseLabel = prevCount ? `沿用 ${md(fr[idx - 1])} 的 ${prevCount} 人名單` : '';
+    const doReuse = () => replaceWith((this.state.rosters[prevKey] || []).map(p => ({ ...p })));
+
+    return {
+      startLabel: md(fr[0]), startDate: S.startDate, sessionLabel: `${md(date)}（第${wk}週）`, cInfo,
+      sessions: fr.map((d, i) => { const a = i === idx, n = (S.rosters[isoOf(d)] || []).length; return { md: md(d), wk: n ? `${n} 人` : `第${Math.ceil(d.getDate() / 7)}週`, onClick: () => this.upd({ sessionDate: isoOf(d), copyStatus: '', moveNote: '' }), bg: a ? '#D7F54A' : 'transparent', color: a ? '#0E1A2B' : '#C5D0DE', border: a ? '#D7F54A' : '#2A3F5E' }; }),
+      isInfo: S.tab === 'info', goSignup: () => this.upd({ tab: 'signup' }), isSignup: S.tab === 'signup', isCourts: S.tab === 'courts', isSched: S.tab === 'sched', isRank: S.tab === 'rank',
+      tabs, schedTabs, sched: { ...schedInfo, matches: schedInfo.matches }, courts, waitlist, waitCount: R.W.length, standings,
+      form: f, formError: S.formError, playerCount: roster.length,
+      reuseLabel, onReuse: doReuse,
+      onName: e => this.setState({ form: { ...this.state.form, name: e.target.value }, formError: '' }),
+      onDupr: e => this.setState({ form: { ...this.state.form, dupr: e.target.value } }),
+      // 不能只檢查「有填」：type=date 在不支援的瀏覽器（部分 LINE 內建 webview、舊瀏覽器）
+      // 會退化成純文字框，使用者打得出 2026/10/02 這種字串
+      onStart: e => {
+        if (!isIso(e.target.value) || needAdmin('修改首發日期')) return;
+        this.upd({ startDate: e.target.value, sessionDate: isoOf(fridaysFrom(e.target.value, 1)[0]) });
+        this.send('setSettings', { startDate: e.target.value });
+      },
+      genders: [['M', '男'], ['F', '女']].map(([v, label]) => ({ label, ...selBtn(f.gender === v, v === 'M' ? '#7FB2FF' : '#FF8FC0'), onClick: () => this.setState({ form: { ...this.state.form, gender: v } }) })),
+      prefs: ['auto', 'A', 'B', 'C'].map(v => ({ label: prefLabels[v], ...selBtn(f.pref === v, v === 'auto' ? '#D7F54A' : ACC[v]), onClick: () => this.setState({ form: { ...this.state.form, pref: v } }) })),
+      addPlayer: () => {
+        const cur = this.state, cf = cur.form;
+        const name = cf.name.trim(), dupr = parseFloat(cf.dupr);
+        if (!name) return this.setState({ formError: '請輸入姓名' });
+        if (isNaN(dupr) || dupr < DUPR_MIN || dupr > DUPR_MAX) return this.setState({ formError: DUPR_HINT });
+        const list = liveRoster();
+        if (list.some(x => x.name.trim().toLowerCase() === name.toLowerCase()))
+          return this.setState({ formError: `這一場的名單上已經有「${name}」了。同名請加上區分（例如「${name}2」），避免分場時認錯人。` });
+        const me = { id: cur.nextId, name, gender: cf.gender, dupr: Math.round(dupr * 10) / 10, pref: cf.pref, device: deviceId() };
+        setRoster([...list, me], { nextId: cur.nextId + 1, form: { ...cf, name: '' }, formError: '' });
+        // 報名不需要管理密碼。伺服器會發正式 id 並把權威名單送回來蓋掉這裡的暫用 id。
+        this.send('signup', { session: dateKey, name, gender: me.gender, dupr: me.dupr, pref: me.pref });
+      },
+      duprMin: DUPR_MIN, duprMax: DUPR_MAX,
+      moveNote: S.moveNote || '', onMoveNoteClose: () => this.setState({ moveNote: '' }),
+      onCopyCourts: copy('courts', courtsText), copyCourtsLabel: copyLabel('courts', '複製分場結果'),
+      onCopySched: copy('sched', schedText), copySchedLabel: copyLabel('sched', `複製 ${sc} 場賽程`),
+      copyFallback: S.copyStatus === 'fail' ? (S.copyKind === 'sched' ? schedText : courtsText) : '',
+      onCopySelect: e => e.target.select(),
+      confirmMsg, confirmYes: confirmAct === 'clear' ? '確定清空' : '確定覆蓋',
+      onConfirmNo: () => this.setState({ confirmAct: '' }),
+      onConfirmYes: () => this.state.confirmAct === 'clear' ? doClear() : doDemo(),
+      loadDemo: () => nothingToLose ? doDemo() : this.setState({ confirmAct: 'demo' }),
+      clearAll: () => { if (!nothingToLose) this.setState({ confirmAct: 'clear' }); },
+      roster: roster.map((p, i) => { const c = courtOf[p.id];
+        // 自己這支手機報的名可以自己取消；要刪別人就得解鎖
+        const mine = !API_URL || (p.device && p.device === myDevice);
+        return { no: i + 1, name: p.name, gtxt: gTxt(p.gender), gColor: gCol(p.gender), dupr: p.dupr.toFixed(1), prefTxt: p.pref === 'auto' ? '' : '志願' + p.pref,
+          badge: c ? c + '場' : '候補', badgeBg: c ? ACC[c] : '#2A2112', badgeColor: c ? '#0E1A2B' : '#FFD27A',
+          remove: () => {
+            if (!mine && needAdmin(`取消「${p.name}」的報名`)) return;
+            setRoster(liveRoster().filter(x => x.id !== p.id));
+            this.send('withdraw', { session: dateKey, id: p.id });
+          } }; }),
+
+      /* ---- 試算表後台的狀態與操作 ---- */
+      cloudOn: !!API_URL,
+      cloudBar: API_URL ? ({
+        loading: { text: '正在從試算表載入…', bg: '#16263D', color: '#9AA9BD' },
+        saving: { text: '正在存到試算表…', bg: '#16263D', color: '#9AA9BD' },
+        ok: { text: S.pending.length ? `還有 ${S.pending.length} 筆變更等著補送` : '', bg: '#16263D', color: '#9AA9BD' },
+        error: { text: '⚠ ' + (S.cloudMsg || '跟試算表連線失敗'), bg: '#2A2112', color: '#FFD27A' },
+        off: { text: '', bg: '#16263D', color: '#9AA9BD' }
+      })[S.cloud] || { text: '', bg: '#16263D', color: '#9AA9BD' } : { text: '', bg: '#16263D', color: '#9AA9BD' },
+      // 連線正常又沒有待送的東西時整條都不顯示，不要一直佔著畫面
+      showCloudBar: !!API_URL && (S.cloud === 'error' || S.cloud === 'loading' || !!S.pending.length),
+      onRetry: () => this.pull(),
+      lockLabel: this.token() ? '已解鎖（點此登出管理權）' : '輸入管理密碼',
+      askToken: !!S.askToken && !this.token(),
+      tokenInput: S.tokenInput || '',
+      onTokenInput: e => this.setState({ tokenInput: e.target.value }),
+      onLockToggle: () => {
+        if (this.token()) { ls.set(TOKEN_KEY, ''); this.setState({ askToken: false, cloudMsg: '已登出管理權' }); }
+        else this.setState({ askToken: !S.askToken, cloudMsg: '' });
+      },
+      // 密碼先存起來再補送待送佇列；密碼不對的話伺服器會再把 askToken 打開
+      onTokenSave: () => { ls.set(TOKEN_KEY, (this.state.tokenInput || '').trim()); this.setState({ askToken: false, tokenInput: '', cloudMsg: '' }); this.flush(); },
+      onPushSnapshot: () => {
+        if (needAdmin('推送報表')) return;
+        const state = m => !m.sa && !m.sb ? '未登錄' : (m.err ? '比分不合法：' + m.err : '完賽');
+        this.send('snapshot', {
+          session: dateKey,
+          courts: courts.map(c => ({ letter: c.letter, players: R[c.letter].map(p => ({ name: p.name, gender: p.gender, dupr: p.dupr, pref: p.pref, note: '' })) })),
+          sched: ['A', 'B', 'C'].reduce((all, c) => all.concat(scheds[c].map(m => ({
+            court: c, no: m.no, time: m.time, target: m.target, a: m.tName, b: m.uName, sa: m.sa, sb: m.sb, state: state(m)
+          }))), []),
+          standings: standings.reduce((all, g) => all.concat(g.rows.map(r => ({
+            court: g.letter, rank: r.rank, name: r.name, w: r.s0.w, l: r.s0.l, pf: r.s0.pf, pa: r.s0.pa
+          }))), [])
+        });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
