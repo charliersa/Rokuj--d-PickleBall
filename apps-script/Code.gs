@@ -823,7 +823,7 @@ function setup() {
   ss.setActiveSheet(sheet(TAB.settings));
 
   log('初始化', '', '版本 ' + VERSION + '、配色 ' + String(getSetting('試算表配色') || 'light'), 'OK');
-  SpreadsheetApp.getUi().alert(
+  alert_(
     '初始化完成（版本 ' + VERSION + '）\n\n' +
     '下一步：\n' +
     '1. 到「設定」工作表填入「管理密碼」\n' +
@@ -831,6 +831,15 @@ function setup() {
     '   執行身分：我　／　誰可以存取：任何人\n' +
     '3. 把 /exec 結尾的網址貼到 index.html 的 API_URL'
   );
+}
+
+/** 從試算表選單執行就跳視窗；從 Apps Script 編輯器直接執行沒有 UI，改寫到執行記錄。 */
+function alert_(msg) {
+  try {
+    SpreadsheetApp.getUi().alert(msg);
+  } catch (e) {
+    Logger.log(msg);
+  }
 }
 
 function onOpen() {
