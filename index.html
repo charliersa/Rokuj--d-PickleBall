@@ -2,7 +2,22 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>六甲頂匹克球熱血團</title>
+<meta name="theme-color" content="#0E1A2B">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="六甲頂匹克球">
+<script>
+// PWA：註冊 service worker，讓手機可以「加入主畫面」並在沒網路時也能打開
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -19,7 +34,7 @@ input::placeholder{color:#6B7C93}
 </helmet>
 <div style="max-width:480px;margin:0 auto;min-height:100vh;background:#0E1A2B;display:flex;flex-direction:column;box-shadow:0 0 0 1px #1B2C44">
 
-<header style="padding:22px 18px 14px;border-bottom:1px solid #1E3150;display:flex;flex-direction:column;gap:10px">
+<header style="padding:max(22px, env(safe-area-inset-top)) 18px 14px;border-bottom:1px solid #1E3150;display:flex;flex-direction:column;gap:10px">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
     <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;letter-spacing:.14em;font-size:13px;color:#D7F54A">SMASH DINKER · 固定團</div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -351,7 +366,7 @@ input::placeholder{color:#6B7C93}
 
 </main>
 
-<nav style="position:sticky;bottom:0;background:#0A1422;border-top:1px solid #1E3150;display:grid;grid-template-columns:repeat(5,1fr)">
+<nav style="position:sticky;bottom:0;padding-bottom:env(safe-area-inset-bottom);background:#0A1422;border-top:1px solid #1E3150;display:grid;grid-template-columns:repeat(5,1fr)">
   <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
     <button onClick="{{ t.onClick }}" style="min-height:58px;background:transparent;border:none;border-top:3px solid {{ t.bar }};color:{{ t.color }};font-weight:700;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:.12em">{{ t.en }}</span>
