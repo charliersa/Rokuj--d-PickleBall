@@ -60,6 +60,21 @@ input::placeholder{color:#6B7C93}
   </div>
 </header>
 
+<sc-if value="{{ askToken }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ onTokenClose }}" style="position:fixed;inset:0;background:rgba(4,9,16,.55);z-index:50"></div>
+  <div role="dialog" aria-label="管理員登入" style="position:fixed;z-index:51;top:calc(env(safe-area-inset-top) + 56px);right:max(12px, calc((100vw - 480px) / 2 + 12px));width:min(300px, calc(100vw - 24px));box-sizing:border-box;background:#16263D;border:1px solid #2A3F5E;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 32px rgba(0,0,0,.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div style="font-size:14px;font-weight:700">🔒 管理員登入</div>
+      <button onClick="{{ onTokenClose }}" aria-label="關閉" style="background:transparent;border:none;color:#9AA9BD;font-size:18px;cursor:pointer;min-width:28px;min-height:28px;padding:0">×</button>
+    </div>
+    <div style="font-size:13px;line-height:1.5;color:#C5D0DE">請輸入管理密碼（在試算表的「設定」工作表裡）。解鎖後這支手機會記住，不用每次輸入。</div>
+    <div style="display:flex;gap:8px">
+      <input type="password" value="{{ tokenInput }}" onChange="{{ onTokenInput }}" placeholder="管理密碼" style="flex:1;min-width:0;background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px;color:#F3F6FA;font-size:16px;outline:none">
+      <button onClick="{{ onTokenSave }}" style="flex:0 0 auto;border:none;border-radius:10px;background:#D7F54A;color:#0E1A2B;font-weight:900;font-size:15px;padding:0 16px;min-height:44px;cursor:pointer">解鎖</button>
+    </div>
+  </div>
+</sc-if>
+
 <main style="flex:1;padding:16px 14px 24px;display:flex;flex-direction:column;gap:14px">
 
 <sc-if value="{{ copyFallback }}" hint-placeholder-val="{{ false }}">
@@ -76,15 +91,6 @@ input::placeholder{color:#6B7C93}
   </div>
 </sc-if>
 
-<sc-if value="{{ askToken }}" hint-placeholder-val="{{ false }}">
-  <div style="background:#16263D;border:1px solid #2A3F5E;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px">
-    <div style="font-size:13px;color:#C5D0DE">請輸入管理密碼（在試算表的「設定」工作表裡）。解鎖後這支手機會記住，不用每次輸入。</div>
-    <div style="display:flex;gap:8px">
-      <input type="password" value="{{ tokenInput }}" onChange="{{ onTokenInput }}" placeholder="管理密碼" style="flex:1;min-width:0;background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px;color:#F3F6FA;font-size:16px;outline:none">
-      <button onClick="{{ onTokenSave }}" style="flex:0 0 auto;border:none;border-radius:10px;background:#D7F54A;color:#0E1A2B;font-weight:900;font-size:15px;padding:0 16px;min-height:44px;cursor:pointer">解鎖</button>
-    </div>
-  </div>
-</sc-if>
 
 <sc-if value="{{ isInfo }}" hint-placeholder-val="{{ false }}">
   <section style="background:#16263D;border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:10px">
@@ -1027,6 +1033,7 @@ class Component extends DCLogic {
         else this.setState({ askToken: !S.askToken, cloudMsg: '' });
       },
       // 密碼先存起來再補送待送佇列；密碼不對的話伺服器會再把 askToken 打開
+      onTokenClose: () => this.setState({ askToken: false, tokenInput: '' }),
       onTokenSave: () => { ls.set(TOKEN_KEY, (this.state.tokenInput || '').trim()); this.setState({ askToken: false, tokenInput: '', cloudMsg: '' }); this.flush(); },
       onPushSnapshot: () => {
         if (needAdmin('推送報表')) return;
