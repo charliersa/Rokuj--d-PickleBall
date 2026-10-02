@@ -22,7 +22,12 @@ input::placeholder{color:#6B7C93}
 <header style="padding:22px 18px 14px;border-bottom:1px solid #1E3150;display:flex;flex-direction:column;gap:10px">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
     <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;letter-spacing:.14em;font-size:13px;color:#D7F54A">SMASH DINKER · 固定團</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;color:#9AA9BD">FRI 19:00–21:00</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;color:#9AA9BD">FRI 19:00–21:00</div>
+      <sc-if value="{{ cloudOn }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ onLockToggle }}" title="{{ lockTitle }}" aria-label="{{ lockTitle }}" style="flex:0 0 auto;border:1px solid {{ lockBorder }};border-radius:8px;background:transparent;color:{{ lockColor }};font-size:12px;padding:4px 8px;min-height:28px;cursor:pointer;white-space:nowrap">{{ lockLabel }}</button>
+      </sc-if>
+    </div>
   </div>
   <h1 style="margin:0;font-size:28px;font-weight:900;line-height:1.15;letter-spacing:.02em">六甲頂匹克球熱血團</h1>
   <div style="font-size:14px;color:#C5D0DE">週五夜打熱血開揪！首發 {{ startLabel }} 起，每週五一起暢快揮拍</div>
@@ -208,9 +213,6 @@ input::placeholder{color:#6B7C93}
     <input type="date" value="{{ startDate }}" onChange="{{ onStart }}" style="background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px;color:#F3F6FA;font-size:15px;color-scheme:dark">
   </section>
 
-  <sc-if value="{{ cloudOn }}" hint-placeholder-val="{{ false }}">
-    <button onClick="{{ onLockToggle }}" style="min-height:44px;border:1px dashed #2A3F5E;border-radius:12px;background:transparent;color:#9AA9BD;font-size:13px;cursor:pointer">{{ lockLabel }}</button>
-  </sc-if>
 </sc-if>
 
 <sc-if value="{{ isCourts }}" hint-placeholder-val="{{ true }}">
@@ -998,7 +1000,10 @@ class Component extends DCLogic {
       // 連線正常又沒有待送的東西時整條都不顯示，不要一直佔著畫面
       showCloudBar: !!API_URL && (S.cloud === 'error' || S.cloud === 'loading' || !!S.pending.length),
       onRetry: () => this.pull(),
-      lockLabel: this.token() ? '已解鎖（點此登出管理權）' : '輸入管理密碼',
+      lockLabel: this.token() ? '🔓 管理中' : '🔒 管理',
+      lockTitle: this.token() ? '已解鎖管理權，點此登出' : '管理員登入（輸入管理密碼）',
+      lockBorder: this.token() ? '#D7F54A' : '#2A3F5E',
+      lockColor: this.token() ? '#D7F54A' : '#6B7C93',
       askToken: !!S.askToken && !this.token(),
       tokenInput: S.tokenInput || '',
       onTokenInput: e => this.setState({ tokenInput: e.target.value }),
