@@ -3,18 +3,18 @@
    - support.js、圖示：先給快取、背景再更新
    - unpkg 的 React/Babel 與 Google 字型網址都有版本號，內容不會變，快取優先
    - Apps Script 後台（script.google.com）完全不碰，資料一律直接連線 */
-const CACHE = 'ljd-pickle-v2';
+const CACHE = 'ljd-pickle-v3';
 const SHELL = [
   './',
   './index.html',
   './support.js',
-  './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/maskable-192.png',
-  './icons/maskable-512.png',
-  './icons/favicon-32.png',
-  './icons/apple-touch-icon.png'
+  './manifest.webmanifest?v=3',
+  './icons/icon-192-v2.png',
+  './icons/icon-512-v2.png',
+  './icons/maskable-192-v2.png',
+  './icons/maskable-512-v2.png',
+  './icons/favicon-32-v2.png',
+  './icons/apple-touch-icon-v2.png'
 ];
 const CDN = [
   'https://unpkg.com/react@18.3.1/umd/react.production.min.js',
@@ -25,7 +25,8 @@ const CDN = [
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
-    await cache.addAll(SHELL);
+    // 繞過瀏覽器的 HTTP 快取，改版後裝新的 service worker 時才不會又存到舊檔
+    await cache.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })));
     // CDN 抓不到不要讓安裝失敗，第一次正常開頁面時也會補進快取
     await Promise.all(CDN.map(url =>
       fetch(url, { mode: 'cors' }).then(res => res.ok && cache.put(url, res)).catch(() => {})
