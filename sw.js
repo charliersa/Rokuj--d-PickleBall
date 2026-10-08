@@ -3,7 +3,7 @@
    - support.js、圖示：先給快取、背景再更新
    - unpkg 的 React/Babel 與 Google 字型網址都有版本號，內容不會變，快取優先
    - Apps Script 後台（script.google.com）完全不碰，資料一律直接連線 */
-const CACHE = 'ljd-pickle-v1';
+const CACHE = 'ljd-pickle-v2';
 const SHELL = [
   './',
   './index.html',
@@ -11,6 +11,9 @@ const SHELL = [
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  './icons/maskable-192.png',
+  './icons/maskable-512.png',
+  './icons/favicon-32.png',
   './icons/apple-touch-icon.png'
 ];
 const CDN = [

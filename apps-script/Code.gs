@@ -16,7 +16,7 @@
  *   5. 把 /exec 網址貼到 index.html 的 API_URL
  */
 
-var VERSION = '1.2.0';
+var VERSION = '1.3.0';
 
 var TAB = {
   settings: '設定',
@@ -52,6 +52,7 @@ var SETTING_DEFAULTS = [
   ['雙打場人數上限', 6, '1、2、3、5 號雙打場每場最多幾人，建議 4–8。（4 號主題場固定 8 人）'],
   ['雙打場局數', 8, '1、2、3、5 號場各排幾局。120 分鐘 ÷ 每局 15 分鐘 = 8。'],
   ['開放場地', '1,2,3,4,5', '這陣子有開的場地號碼，逗號分隔（例如 1,2,4）。關掉的場地網頁上不收報名、不排賽程，選了該場的球友會依 DUPR 改排到有開的場地。網頁管理選單的「開放場地」按鈕會自動改這一格。'],
+  ['關閉報名場次', '', '不開放球友報名的場次日期，逗號分隔（例如 2026-10-16,2026-10-23）。沒列到的日期都開放報名；管理員輸入密碼後仍可代報名。網頁管理選單的「開放報名日期」按鈕會自動改這一格。'],
   ['女雙PK場次', '', '第二週 4 號場女雙交流日採「玩法 B 閨蜜 PK 賽」的場次日期，多個用逗號分隔（例如 2026-10-09,2026-11-13）。沒列到的第二週一律是玩法 A 旋轉搭檔。網頁上的切換按鈕會自動改這一格。'],
   ['允許球友自行報名', 'TRUE', 'TRUE＝拿到連結的人可以自己報名。改成 FALSE 的話連報名都要管理密碼。'],
   ['紀錄保留筆數', 2000, '「紀錄」工作表超過這個筆數就會自動刪掉最舊的。'],
@@ -175,6 +176,7 @@ function actionLoad() {
     gamesAB: num(settingAny('雙打場局數', 'A/B場局數'), 8),
     pkDates: pkDates(),
     openCourts: openCourts(),
+    closedDates: dateList('關閉報名場次'),
     openSignup: isTrue(getSetting('允許球友自行報名')),
     rosters: rosters, scores: scores, serverTime: now()
   };
@@ -183,6 +185,8 @@ function actionLoad() {
 function actionSignup(p) {
   var session = reqIso(p.session);
   if (!isTrue(getSetting('允許球友自行報名'))) requireAdmin(p);
+  // 這一場關閉報名時，只有管理員能代報名。錯誤訊息刻意不提「密碼」，否則網頁會對一般球友跳出密碼框
+  if (dateList('關閉報名場次').indexOf(session) >= 0 && !isAdmin(p)) throw new Error('這一場尚未開放報名');
 
   var name = String(p.name == null ? '' : p.name).trim();
   if (!name) throw new Error('請輸入姓名');
@@ -352,6 +356,12 @@ function actionSetSettings(p) {
     if (!oc.length) throw new Error('至少要開放一面場地');
     setSetting('開放場地', oc.join(',')); changed.push('開放場地=' + oc.join(','));
   }
+  if (p.closedDates != null) {
+    var cd = Array.isArray(p.closedDates) ? p.closedDates.map(String) : [];
+    cd.forEach(function (d) { if (!isIsoDate(d)) throw new Error('關閉報名場次要是 YYYY-MM-DD，收到的是：' + d); });
+    cd.sort();
+    setSetting('關閉報名場次', cd.join(',')); changed.push('關閉報名場次=' + (cd.join(',') || '（無）'));
+  }
   if (p.pkDates != null) {
     var list = Array.isArray(p.pkDates) ? p.pkDates.map(String) : [];
     list.forEach(function (d) { if (!isIsoDate(d)) throw new Error('女雙PK場次要是 YYYY-MM-DD，收到的是：' + d); });
@@ -482,8 +492,10 @@ function openCourts() {
   var oc = COURTS.filter(function (c) { return got.indexOf(c) >= 0; });
   return oc.length ? oc : COURTS.slice();
 }
-function pkDates() {
-  return String(getSetting('女雙PK場次') || '').split(/[,，\s]+/).map(function (d) { return toIso(d.trim()); })
+function pkDates() { return dateList('女雙PK場次'); }
+/** 設定表裡逗號分隔的日期清單 */
+function dateList(key) {
+  return String(getSetting(key) || '').split(/[,，\s]+/).map(function (d) { return toIso(d.trim()); })
     .filter(function (d) { return !!d; });
 }
 function setSetting(key, val) {
@@ -493,6 +505,12 @@ function setSetting(key, val) {
   }
   sh.appendRow([key, val, '']);
   _settings = null;
+}
+
+/** 不丟錯的版本：密碼有設、而且對得上才算管理員 */
+function isAdmin(p) {
+  var want = String(getSetting('管理密碼') || '');
+  return !!want && String((p && p.token) == null ? '' : p.token) === want;
 }
 
 function requireAdmin(p) {

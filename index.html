@@ -6,7 +6,8 @@
 <title>六甲頂匹克球熱血團</title>
 <meta name="theme-color" content="#0E1A2B">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="./icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="./icons/favicon-48.png" sizes="48x48" type="image/png">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -86,6 +87,18 @@ input::placeholder{color:#6B7C93}
         </sc-for>
       </div>
       <div style="font-size:11px;line-height:1.5;color:#9AA9BD">關閉的場地不收報名、不排賽程；選了該場的球友會依 DUPR 改排到有開的場地。</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+        <span style="font-size:13px;font-weight:700">開放報名日期</span>
+        <span style="font-size:11px;color:#9AA9BD">點一下開／關</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px">
+        <sc-for list="{{ dateToggles }}" as="o" hint-placeholder-count="8">
+          <button onClick="{{ o.onClick }}" aria-pressed="{{ o.on }}" style="min-height:40px;border-radius:8px;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;cursor:pointer;padding:0;text-decoration:{{ o.strike }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <div style="font-size:11px;line-height:1.5;color:#9AA9BD">關閉的日期球友無法報名；已報名的名單、分場與賽程不受影響。管理員解鎖後仍可代為報名。</div>
     </div>
     <button onClick="{{ onPushSnapshot }}" role="menuitem" style="min-height:46px;border:1px solid #2A3F5E;border-radius:10px;background:#0E1A2B;color:#F3F6FA;font-weight:700;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 10px">
       <span>推送分場／賽程／戰績到試算表</span>
@@ -203,6 +216,13 @@ input::placeholder{color:#6B7C93}
 </sc-if>
 
 <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ signupClosed }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#2A2112;border:1px solid #6B5415;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-weight:900;font-size:16px;color:#FFD27A">🔒 {{ sessionLabel }} 尚未開放報名</div>
+      <div style="font-size:14px;line-height:1.6;color:#FFD27A;text-wrap:pretty">{{ closedHint }}</div>
+    </section>
+  </sc-if>
+  <sc-if value="{{ showSignupForm }}" hint-placeholder-val="{{ true }}">
   <section style="background:#16263D;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
     <div style="font-weight:700;font-size:16px">報名 · {{ sessionLabel }}</div>
     <input value="{{ form.name }}" onChange="{{ onName }}" placeholder="姓名 / 暱稱" style="background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:12px;color:#F3F6FA;font-size:16px;outline:none">
@@ -230,6 +250,7 @@ input::placeholder{color:#6B7C93}
     </sc-if>
     <button onClick="{{ addPlayer }}" style="min-height:50px;border:none;border-radius:12px;background:#D7F54A;color:#0E1A2B;font-weight:900;font-size:17px;letter-spacing:.06em;cursor:pointer">＋ 我要報名</button>
   </section>
+  </sc-if>
 
   <section style="display:flex;flex-direction:column;gap:8px">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:0 4px">
@@ -590,7 +611,7 @@ const fridaysFrom = (startDate, n) => {
 };
 // 名單依場次分開存：rosters[ISO日期] = 該場的報名名單。選中的場次用日期而非索引記，
 // 場次清單長短變動時才不會指到別一場
-const defaults = () => ({ startDate: START_DEFAULT, sessionDate: isoOf(fridaysFrom(START_DEFAULT, 1)[0]), rosters: { [isoOf(fridaysFrom(START_DEFAULT, 1)[0])]: demoPlayers() }, nextId: DEMO.length + 1, scores: {}, pkDates: [], openCourts: COURTS.slice(), tab: 'courts', schedCourt: '1', form: { name: '', gender: 'M', dupr: '2.7', pref: 'auto' }, formError: '', confirmAct: '', copyKind: '', copyStatus: '', moveNote: '',
+const defaults = () => ({ startDate: START_DEFAULT, sessionDate: isoOf(fridaysFrom(START_DEFAULT, 1)[0]), rosters: { [isoOf(fridaysFrom(START_DEFAULT, 1)[0])]: demoPlayers() }, nextId: DEMO.length + 1, scores: {}, pkDates: [], openCourts: COURTS.slice(), closedDates: [], tab: 'courts', schedCourt: '1', form: { name: '', gender: 'M', dupr: '2.7', pref: 'auto' }, formError: '', confirmAct: '', copyKind: '', copyStatus: '', moveNote: '',
   // 後台相關的狀態一律不寫進 localStorage（除了密碼另外存），重開頁面要重新確認連線
   cloud: API_URL ? 'loading' : 'off', cloudMsg: '', pending: [], askToken: false, adminMenu: false, tokenInput: '', capAB: 0, gamesAB: 0 });
 const pk = (a, b) => a < b ? a + '_' + b : b + '_' + a;
@@ -712,6 +733,7 @@ class Component extends DCLogic {
         st.schedCourt = ACC[migPref(st.schedCourt)] ? migPref(st.schedCourt) : '1';
         st.pkDates = Array.isArray(st.pkDates) ? st.pkDates.filter(isIso) : [];
         st.openCourts = normOpen(st.openCourts);
+        st.closedDates = Array.isArray(st.closedDates) ? st.closedDates.filter(isIso) : [];
         // 存檔有可能是手改過或舊版寫壞的，日期一律重新驗證過才敢用
         if (!isIso(st.startDate)) st.startDate = START_DEFAULT;
         const fr = fridaysFrom(st.startDate, SESSION_COUNT).map(isoOf);
@@ -728,8 +750,8 @@ class Component extends DCLogic {
   }
   upd(patch) {
     this.setState(patch, () => {
-      const { startDate, sessionDate, rosters, nextId, scores, pkDates, openCourts, tab, schedCourt } = this.state;
-      try { localStorage.setItem(KEY, JSON.stringify({ startDate, sessionDate, rosters, nextId, scores, pkDates, openCourts, tab, schedCourt })); } catch (e) {}
+      const { startDate, sessionDate, rosters, nextId, scores, pkDates, openCourts, closedDates, tab, schedCourt } = this.state;
+      try { localStorage.setItem(KEY, JSON.stringify({ startDate, sessionDate, rosters, nextId, scores, pkDates, openCourts, closedDates, tab, schedCourt })); } catch (e) {}
     });
   }
 
@@ -750,6 +772,7 @@ class Component extends DCLogic {
       if (j.scores) patch.scores = migScores(j.scores);
       if (Array.isArray(j.pkDates)) patch.pkDates = j.pkDates.filter(isIso);
       if (Array.isArray(j.openCourts)) patch.openCourts = normOpen(j.openCourts);
+      if (Array.isArray(j.closedDates)) patch.closedDates = j.closedDates.filter(isIso);
       if (isIso(j.startDate)) patch.startDate = j.startDate;
       if (j.capAB) patch.capAB = j.capAB;
       if (j.gamesAB) patch.gamesAB = j.gamesAB;
@@ -781,6 +804,10 @@ class Component extends DCLogic {
       .catch(err => {
         // 密碼錯誤重送幾次都一樣，排進佇列只會變成一直失敗，所以不排，直接叫出解鎖框
         const badPw = /密碼/.test(err.message);
+        // 報名被關閉（畫面還沒更新到最新設定）重送也一樣會被拒，不排佇列，直接重新載入讓本機名單跟試算表一致
+        if (/尚未開放報名/.test(err.message)) {
+          return this.pull().then(() => this.setState({ cloud: 'error', cloudMsg: err.message, formError: err.message }));
+        }
         // 用 updater 形式讀 prev，兩個請求同時失敗時才不會有一筆被覆蓋掉
         this.setState(prev => ({
           cloud: 'error', cloudMsg: err.message,
@@ -1115,6 +1142,10 @@ class Component extends DCLogic {
       this.upd({ pkDates, moveNote: '' });
       this.send('setSettings', { pkDates });
     };
+    // 報名開關：closedDates 記「不開放報名」的日期，沒列到的一律開放
+    const closed = S.closedDates || [];
+    const signupClosed = closed.includes(dateKey);
+    const isAdmin = !API_URL || !!this.token();
     const themePick = wk === 2 && themeOpen ? [[false, '玩法 A｜旋轉搭檔'], [true, '玩法 B｜閨蜜 PK']].map(([v, label]) => ({ label, onClick: setPk(v), ...selBtn(pkWeek === v, ACC[THEME]) })) : [];
     const infoCourts = COURTS.map(c => {
       const m = COURT_META[c], theme = c === THEME;
@@ -1125,6 +1156,18 @@ class Component extends DCLogic {
     });
 
     return {
+      // 報名開關：關閉的日期球友看不到報名表；管理員解鎖後仍可代報名
+      signupClosed: signupClosed, showSignupForm: !signupClosed || isAdmin,
+      closedHint: isAdmin ? '目前只有管理員看得到下方報名表，可以先代為報名。要讓球友報名，請到右上角管理選單打開這個日期。' : '開放時間請留意群組公告，開放後就能在這裡報名。',
+      dateToggles: fr.map(d => { const k = isoOf(d), on = !closed.includes(k); return { label: md(d), on, strike: on ? 'none' : 'line-through',
+        bg: on ? '#D7F54A' : 'transparent', color: on ? '#0E1A2B' : '#6B7C93', border: on ? '#D7F54A' : '#2A3F5E',
+        onClick: () => {
+          if (needAdmin('設定開放報名日期')) return;
+          const cur = (this.state.closedDates || []).filter(x => x !== k);
+          const closedDates = on ? [...cur, k].sort() : cur;
+          this.upd({ closedDates });
+          this.send('setSettings', { closedDates });
+        } }; }),
       // 開放場地切換（管理選單）：至少要留一面，最後一面關不掉
       openCount: open.length, themeOpen,
       openToggles: COURTS.map(c => { const on = open.includes(c); return { label: c + '號', on, strike: on ? 'none' : 'line-through',
@@ -1139,7 +1182,7 @@ class Component extends DCLogic {
         } }; }),
       infoCourts, themePick, showThemePick: themePick.length > 0, showThemePickSched: themePick.length > 0 && sc === THEME,
       startLabel: md(fr[0]), startDate: S.startDate, sessionLabel: `${md(date)}（第${wk}週）`, cInfo,
-      sessions: fr.map((d, i) => { const a = i === idx, n = (S.rosters[isoOf(d)] || []).length; return { md: md(d), wk: n ? `${n} 人` : `第${Math.ceil(d.getDate() / 7)}週`, onClick: () => this.upd({ sessionDate: isoOf(d), copyStatus: '', moveNote: '' }), bg: a ? '#D7F54A' : 'transparent', color: a ? '#0E1A2B' : '#C5D0DE', border: a ? '#D7F54A' : '#2A3F5E' }; }),
+      sessions: fr.map((d, i) => { const a = i === idx, n = (S.rosters[isoOf(d)] || []).length, shut = closed.includes(isoOf(d)); return { md: md(d), wk: n ? `${n} 人` : (shut ? '未開放' : `第${Math.ceil(d.getDate() / 7)}週`), onClick: () => this.upd({ sessionDate: isoOf(d), copyStatus: '', moveNote: '' }), bg: a ? '#D7F54A' : 'transparent', color: a ? '#0E1A2B' : '#C5D0DE', border: a ? '#D7F54A' : '#2A3F5E' }; }),
       isInfo: S.tab === 'info', goSignup: () => this.upd({ tab: 'signup' }), isSignup: S.tab === 'signup', isCourts: S.tab === 'courts', isSched: S.tab === 'sched', isRank: S.tab === 'rank',
       tabs, schedTabs, sched: { ...schedInfo, matches: schedInfo.matches }, courts, waitlist, waitCount: R.W.length, standings,
       form: f, formError: S.formError, playerCount: roster.length,
@@ -1156,6 +1199,7 @@ class Component extends DCLogic {
       genders: [['M', '男'], ['F', '女']].map(([v, label]) => ({ label, ...selBtn(f.gender === v, v === 'M' ? '#7FB2FF' : '#FF8FC0'), onClick: () => this.setState({ form: { ...this.state.form, gender: v } }) })),
       prefs: ['auto', ...open].map(v => ({ label: prefLabels[v], ...selBtn(f.pref === v, v === 'auto' ? '#D7F54A' : ACC[v]), onClick: () => this.setState({ form: { ...this.state.form, pref: v } }) })),
       addPlayer: () => {
+        if (signupClosed && !isAdmin) return this.setState({ formError: '這一場尚未開放報名' });
         const cur = this.state, cf = cur.form;
         const name = cf.name.trim(), dupr = parseFloat(cf.dupr);
         if (!name) return this.setState({ formError: '請輸入姓名' });
