@@ -16,7 +16,7 @@
  *   5. 把 /exec 網址貼到 index.html 的 API_URL
  */
 
-var VERSION = '1.0.0';
+var VERSION = '1.2.0';
 
 var TAB = {
   settings: '設定',
@@ -38,7 +38,7 @@ HEAD[TAB.rank] = ['場次日期', '場地', '名次', '單位', '勝', '敗', '�
 HEAD[TAB.log] = ['時間', '動作', '場次', '內容', '結果'];
 
 // 這些欄位一定要鎖成純文字：場次日期會被試算表自動吃成日期物件，對戰代號
-// （例如 2026-10-02|A|12.15~3.9#1）長得像運算式，兩者被轉型後比分就對不上人了。
+// （例如 2026-10-02|1|12.15~3.9#1）長得像運算式，兩者被轉型後比分就對不上人了。
 var TEXT_COLS = {};
 TEXT_COLS[TAB.players] = [1];
 TEXT_COLS[TAB.scores] = [1, 3];
@@ -49,12 +49,17 @@ TEXT_COLS[TAB.rank] = [1];
 var SETTING_DEFAULTS = [
   ['管理密碼', '', '清空名單、刪別人、登錄比分、改首發日期時要輸入的密碼。請改成只有你知道的字串，留空的話這些動作會全部被拒絕。'],
   ['首發開打日期', '2026-10-02', 'YYYY-MM-DD。網頁的場次清單從這天之後的第一個週五起算 8 週。'],
-  ['A/B場人數上限', 6, '每個場地最多幾人，建議 4–8。'],
-  ['A/B場局數', 8, 'A/B 場各排幾局。120 分鐘 ÷ 每局 15 分鐘 = 8。'],
+  ['雙打場人數上限', 6, '1、2、3、5 號雙打場每場最多幾人，建議 4–8。（4 號主題場固定 8 人）'],
+  ['雙打場局數', 8, '1、2、3、5 號場各排幾局。120 分鐘 ÷ 每局 15 分鐘 = 8。'],
+  ['開放場地', '1,2,3,4,5', '這陣子有開的場地號碼，逗號分隔（例如 1,2,4）。關掉的場地網頁上不收報名、不排賽程，選了該場的球友會依 DUPR 改排到有開的場地。網頁管理選單的「開放場地」按鈕會自動改這一格。'],
+  ['女雙PK場次', '', '第二週 4 號場女雙交流日採「玩法 B 閨蜜 PK 賽」的場次日期，多個用逗號分隔（例如 2026-10-09,2026-11-13）。沒列到的第二週一律是玩法 A 旋轉搭檔。網頁上的切換按鈕會自動改這一格。'],
   ['允許球友自行報名', 'TRUE', 'TRUE＝拿到連結的人可以自己報名。改成 FALSE 的話連報名都要管理密碼。'],
   ['紀錄保留筆數', 2000, '「紀錄」工作表超過這個筆數就會自動刪掉最舊的。'],
   ['試算表配色', 'light', 'light＝淺色（好讀、好印，推薦）；dark＝深色（跟網頁同一套顏色）。改完請執行選單「匹克球系統 → 重新套用美編」。']
 ];
+
+// 改名過的設定：舊試算表裡還是舊名字，setup() 會把它們改成新名字（值保留）
+var RENAMED_SETTINGS = [['A/B場人數上限', '雙打場人數上限'], ['A/B場局數', '雙打場局數']];
 
 var LOG_CAP_FALLBACK = 2000;
 var DUPR_MIN = 2, DUPR_MAX = 8;
@@ -166,8 +171,10 @@ function actionLoad() {
   return {
     ok: true, action: 'load', full: true,
     startDate: toIso(getSetting('首發開打日期')) || '',
-    capAB: num(getSetting('A/B場人數上限'), 6),
-    gamesAB: num(getSetting('A/B場局數'), 8),
+    capAB: num(settingAny('雙打場人數上限', 'A/B場人數上限'), 6),
+    gamesAB: num(settingAny('雙打場局數', 'A/B場局數'), 8),
+    pkDates: pkDates(),
+    openCourts: openCourts(),
     openSignup: isTrue(getSetting('允許球友自行報名')),
     rosters: rosters, scores: scores, serverTime: now()
   };
@@ -330,13 +337,26 @@ function actionSetSettings(p) {
   }
   if (p.capAB != null) {
     var cap = num(p.capAB, 0);
-    if (cap < 4 || cap > 8) throw new Error('A/B 場人數上限請填 4–8');
-    setSetting('A/B場人數上限', cap); changed.push('人數上限=' + cap);
+    if (cap < 4 || cap > 8) throw new Error('雙打場人數上限請填 4–8');
+    setSetting('雙打場人數上限', cap); changed.push('人數上限=' + cap);
   }
   if (p.gamesAB != null) {
     var g = num(p.gamesAB, 0);
-    if (g < 4 || g > 16) throw new Error('A/B 場局數請填 4–16');
-    setSetting('A/B場局數', g); changed.push('局數=' + g);
+    if (g < 4 || g > 16) throw new Error('雙打場局數請填 4–16');
+    setSetting('雙打場局數', g); changed.push('局數=' + g);
+  }
+  if (p.openCourts != null) {
+    var oc = (Array.isArray(p.openCourts) ? p.openCourts : []).map(function (c) { return String(c).trim(); });
+    oc.forEach(function (c) { if (COURTS.indexOf(c) < 0) throw new Error('不認得的場地：' + c); });
+    oc = COURTS.filter(function (c) { return oc.indexOf(c) >= 0; });
+    if (!oc.length) throw new Error('至少要開放一面場地');
+    setSetting('開放場地', oc.join(',')); changed.push('開放場地=' + oc.join(','));
+  }
+  if (p.pkDates != null) {
+    var list = Array.isArray(p.pkDates) ? p.pkDates.map(String) : [];
+    list.forEach(function (d) { if (!isIsoDate(d)) throw new Error('女雙PK場次要是 YYYY-MM-DD，收到的是：' + d); });
+    list.sort();
+    setSetting('女雙PK場次', list.join(',')); changed.push('女雙PK場次=' + (list.join(',') || '（無）'));
   }
 
   log('改設定', '', changed.join('、') || '（沒有變動）', 'OK');
@@ -450,6 +470,22 @@ function settingsMap() {
   return _settings;
 }
 function getSetting(key) { var m = settingsMap(); return m.hasOwnProperty(key) ? m[key] : ''; }
+/** 先找新名字，沒有（或空白）才找舊名字，還沒跑過新版 setup() 的試算表也讀得到 */
+function settingAny(key, oldKey) {
+  var v = getSetting(key);
+  return (v === '' || v == null) ? getSetting(oldKey) : v;
+}
+/** 沒填或填壞（一個都認不得）時當成全開，不要讓網頁變成沒有場地 */
+function openCourts() {
+  var raw = String(getSetting('開放場地') == null ? '' : getSetting('開放場地'));
+  var got = raw.split(/[,，、\s]+/).map(function (c) { return c.trim().replace(/號場?$/, ''); });
+  var oc = COURTS.filter(function (c) { return got.indexOf(c) >= 0; });
+  return oc.length ? oc : COURTS.slice();
+}
+function pkDates() {
+  return String(getSetting('女雙PK場次') || '').split(/[,，\s]+/).map(function (d) { return toIso(d.trim()); })
+    .filter(function (d) { return !!d; });
+}
 function setSetting(key, val) {
   var sh = sheet(TAB.settings), rows = readRows(TAB.settings);
   for (var i = 0; i < rows.length; i++) {
@@ -493,11 +529,15 @@ function reqIso(v) {
   return s;
 }
 
+// 舊版 A/B/C 三場：A＝極限挑戰（現 1 號）、B＝友善歡樂（現 2 號）、C＝主題（現 4 號）
+var LEGACY_COURT = { A: '1', B: '2', C: '4' };
+var COURTS = ['1', '2', '3', '4', '5'];
 function normPref(v) {
-  var s = String(v == null ? '' : v).trim().toUpperCase();
-  return (s === 'A' || s === 'B' || s === 'C') ? s : 'auto';
+  var s = String(v == null ? '' : v).trim().toUpperCase().replace(/號場?$/, '');
+  if (LEGACY_COURT[s]) s = LEGACY_COURT[s];
+  return COURTS.indexOf(s) >= 0 ? s : 'auto';
 }
-function labelPref(v) { var s = normPref(v); return s === 'auto' ? '自動' : s + '場'; }
+function labelPref(v) { var s = normPref(v); return s === 'auto' ? '自動' : s + '號場'; }
 function clampDupr(n) { return Math.min(DUPR_MAX, Math.max(DUPR_MIN, isFinite(n) ? n : DUPR_MIN)); }
 function num(v, dflt) { var n = Number(v); return isFinite(n) ? n : dflt; }
 function cell(v) { return (v == null || v === '') ? '' : String(v).trim(); }
@@ -530,7 +570,7 @@ var THEMES = {
     bg: '#FFFFFF', fg: '#1B2430', muted: '#8894A5',
     stripe: '#F5F8FB', grid: '#E2E8F0', panel: '#F7FAFF',
     // 場地色比網頁深一點，白字才壓得住
-    A: '#E8492A', B: '#15A39C', C: '#7C4DEF', onCourt: '#FFFFFF',
+    1: '#E8492A', 2: '#D97A00', 3: '#15A39C', 4: '#7C4DEF', 5: '#2E9E55', onCourt: '#FFFFFF',
     male: '#1F6FEB', female: '#D6336C',
     goodFg: '#11693F', goodBg: '#E8F6EE',
     badFg: '#B3261E', badBg: '#FCEBEA',
@@ -542,7 +582,7 @@ var THEMES = {
     headBg: '#0A1422', headFg: '#D7F54A', rule: '#D7F54A',
     bg: '#0E1A2B', fg: '#F3F6FA', muted: '#7E8DA3',
     stripe: '#13223A', grid: '#1E3150', panel: '#16263D',
-    A: '#FF5A36', B: '#3FD0C9', C: '#B98CFF', onCourt: '#0E1A2B',
+    1: '#FF5A36', 2: '#FF9F1C', 3: '#3FD0C9', 4: '#B98CFF', 5: '#5CD68A', onCourt: '#0E1A2B',
     male: '#7FB2FF', female: '#FF8FC0',
     goodFg: '#D7F54A', goodBg: '#1E2E16',
     badFg: '#FF8A70', badBg: '#2E1512',
@@ -641,12 +681,12 @@ function applyTheme() {
       sh.getRange(2, 4, rows - 1, 1).setDataValidation(
         SpreadsheetApp.newDataValidation().requireValueInList(['M', 'F'], true).setAllowInvalid(true).build());
       sh.getRange(2, 6, rows - 1, 1).setDataValidation(
-        SpreadsheetApp.newDataValidation().requireValueInList(['auto', 'A', 'B', 'C'], true).setAllowInvalid(true).build());
+        SpreadsheetApp.newDataValidation().requireValueInList(['auto'].concat(COURTS), true).setAllowInvalid(true).build());
       genderRules_(rules, T, col(4));
       courtRules_(rules, T, col(6));
-      // 3.0 以上才排得進 A 場，標出來一眼就看得到
+      // 3.0 以上才排得進 1 號場，標出來一眼就看得到
       rules.push(SpreadsheetApp.newConditionalFormatRule()
-        .whenNumberGreaterThanOrEqualTo(3).setFontColor(T.A).setBold(true)
+        .whenNumberGreaterThanOrEqualTo(3).setFontColor(T['1']).setBold(true)
         .setRanges([col(5)]).build());
     }
 
@@ -733,9 +773,9 @@ function applyTheme() {
   tabColor_(TAB.settings, T.muted);
   tabColor_(TAB.players, T.headFg);
   tabColor_(TAB.scores, T.headFg);
-  tabColor_(TAB.courts, T.A);
-  tabColor_(TAB.sched, T.B);
-  tabColor_(TAB.rank, T.C);
+  tabColor_(TAB.courts, T['1']);
+  tabColor_(TAB.sched, T['3']);
+  tabColor_(TAB.rank, T['4']);
   tabColor_(TAB.log, T.grid);
 
   // 三張報表加「僅警告」的保護：手滑打字時會跳提醒，但不會真的鎖住你
@@ -779,13 +819,20 @@ function genderRules_(rules, T, range) {
     .setFontColor(T.female).setBold(true).setRanges([range]).build());
 }
 
-/** A/B/C 做成色塊，跟網頁上的場地顏色一致 */
+/**
+ * 1–5 號場做成色塊，跟網頁上的場地顏色一致。場地欄寫進去的 '1' 常被試算表吃成數字，
+ * 所以用 TO_TEXT 比對，數字和文字都認得；舊資料的 A/B/C 也照新場號上色。
+ */
 function courtRules_(rules, T, range) {
-  ['A', 'B', 'C'].forEach(function (c) {
-    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(c)
-      .setBackground(T[c]).setFontColor(T.onCourt).setBold(true)
+  var cell = '$' + String.fromCharCode(64 + range.getColumn()) + range.getRow();
+  var paint = function (val, court) {
+    rules.push(SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied('=TO_TEXT(' + cell + ')="' + val + '"')
+      .setBackground(T[court]).setFontColor(T.onCourt).setBold(true)
       .setRanges([range]).build());
-  });
+  };
+  COURTS.forEach(function (c) { paint(c, c); });
+  Object.keys(LEGACY_COURT).forEach(function (c) { paint(c, LEGACY_COURT[c]); });
 }
 
 function tabColor_(name, color) {
@@ -808,7 +855,18 @@ function setup() {
     (TEXT_COLS[name] || []).forEach(function (c) { sh.getRange(1, c, sh.getMaxRows()).setNumberFormat('@'); });
   });
 
-  // 2. 設定表只補不覆蓋，不要把使用者填好的密碼洗掉
+  // 2. 設定表只補不覆蓋，不要把使用者填好的密碼洗掉。改過名的設定先就地改名，值保留
+  var setSh = sheet(TAB.settings);
+  readRows(TAB.settings).forEach(function (r, i) {
+    RENAMED_SETTINGS.forEach(function (pair) {
+      if (String(r[0]).trim() === pair[0]) {
+        var desc = SETTING_DEFAULTS.filter(function (d) { return d[0] === pair[1]; })[0];
+        setSh.getRange(i + 2, 1).setValue(pair[1]);
+        if (desc) setSh.getRange(i + 2, 3).setValue(desc[2]);
+      }
+    });
+  });
+  _settings = null;
   var have = {};
   readRows(TAB.settings).forEach(function (r) { have[String(r[0]).trim()] = 1; });
   var add = SETTING_DEFAULTS.filter(function (row) { return !have[row[0]]; });

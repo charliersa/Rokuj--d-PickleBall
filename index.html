@@ -54,10 +54,12 @@ input::placeholder{color:#6B7C93}
       </button>
     </sc-for>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C5D0DE">
-    <span style="background:#B98CFF;color:#160B2B;font-weight:700;border-radius:6px;padding:2px 7px;font-size:12px">本週 C場</span>
-    <span style="flex:1">{{ cInfo.title }}</span>
-  </div>
+  <sc-if value="{{ themeOpen }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#C5D0DE">
+      <span style="background:#B98CFF;color:#160B2B;font-weight:700;border-radius:6px;padding:2px 7px;font-size:12px">本週 4號場</span>
+      <span style="flex:1">{{ cInfo.title }}</span>
+    </div>
+  </sc-if>
 </header>
 
 <sc-if value="{{ adminMenu }}" hint-placeholder-val="{{ false }}">
@@ -73,6 +75,18 @@ input::placeholder{color:#6B7C93}
         <button onClick="{{ onRetry }}" style="flex:0 0 auto;background:transparent;border:1px solid #2A3F5E;color:#D7F54A;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">重試</button>
       </div>
     </sc-if>
+    <div style="display:flex;flex-direction:column;gap:6px;background:#0E1A2B;border:1px solid #2A3F5E;border-radius:10px;padding:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+        <span style="font-size:13px;font-weight:700">開放場地</span>
+        <span style="font-size:11px;color:#9AA9BD">點一下開／關</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">
+        <sc-for list="{{ openToggles }}" as="o" hint-placeholder-count="5">
+          <button onClick="{{ o.onClick }}" aria-pressed="{{ o.on }}" style="min-height:40px;border-radius:8px;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-weight:800;font-size:13px;cursor:pointer;padding:0;text-decoration:{{ o.strike }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <div style="font-size:11px;line-height:1.5;color:#9AA9BD">關閉的場地不收報名、不排賽程；選了該場的球友會依 DUPR 改排到有開的場地。</div>
+    </div>
     <button onClick="{{ onPushSnapshot }}" role="menuitem" style="min-height:46px;border:1px solid #2A3F5E;border-radius:10px;background:#0E1A2B;color:#F3F6FA;font-weight:700;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 10px">
       <span>推送分場／賽程／戰績到試算表</span>
       <span style="font-size:12px;font-weight:500;color:#9AA9BD">{{ sessionLabel }}</span>
@@ -115,65 +129,87 @@ input::placeholder{color:#6B7C93}
 
 <sc-if value="{{ isInfo }}" hint-placeholder-val="{{ false }}">
   <section style="background:#16263D;border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:10px">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;letter-spacing:.14em;font-size:13px;color:#D7F54A">FRIDAY NIGHT PICKLEBALL</div>
-    <div style="font-size:22px;font-weight:900;line-height:1.3">週五夜打熱血開揪！</div>
-    <div style="font-size:15px;line-height:1.7;color:#C5D0DE;text-wrap:pretty">首發開打：{{ startLabel }} 起，每週五晚上 19:00–21:00 一起熱血開打。各位球友，週五晚上想來動一動、打幾場精彩的雙打嗎？歡迎一起來六甲頂暢快揮拍！</div>
-    <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.65;color:#F3F6FA;display:flex;gap:8px"><span style="color:#D7F54A;font-weight:900">備註</span><span>本社團目前為<b style="color:#D7F54A">暢打團</b>，DUPR 等級僅作為分配場地參考，讓大家打得更順暢，不設門檻、不比輸贏壓力。</span></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;letter-spacing:.14em;font-size:13px;color:#D7F54A">SMASH DINKER · FRIDAY NIGHT</div>
+    <div style="font-size:22px;font-weight:900;line-height:1.3">🔥 週五夜打・熱血開揪！</div>
+    <div style="font-size:15px;line-height:1.7;color:#C5D0DE;text-wrap:pretty">週五晚上，放下工作的疲憊，一起走進球場，享受揮拍的快感！不論你是想挑戰高手、精進球技，還是認識新球友、享受歡樂雙打，都能找到適合自己的場地！</div>
+    <div style="background:#0E1A2B;border-radius:10px;padding:12px;display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:14px;line-height:1.55">
+      <span style="color:#9AA9BD">📆 首發</span><span style="font-weight:700">{{ startLabel }}（五）起，每週五固定開打</span>
+      <span style="color:#9AA9BD">⏰ 時間</span><span style="font-weight:700">19:00－21:00（共 2 小時）</span>
+      <span style="color:#9AA9BD">📍 地點</span><span style="font-weight:700">六甲頂匹克球場</span>
+      <span style="color:#9AA9BD">🏟️ 場地</span><span style="font-weight:700">1～5 號場</span>
+      <span style="color:#9AA9BD">👥 方式</span><span>依球技程度與活動主題分場，採輪替制進行交流及比賽。</span>
+    </div>
   </section>
 
   <section style="display:flex;flex-direction:column;gap:10px">
-    <div style="font-weight:900;font-size:17px;padding:0 4px">三個場地怎麼選</div>
-    <div style="background:#16263D;border-radius:14px;padding:14px 16px;border-top:4px solid #FF5A36;display:flex;flex-direction:column;gap:6px">
-      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;color:#FF5A36">A</span><span style="font-weight:900">極限挑戰場</span><span style="font-size:12px;color:#9AA9BD">建議 DUPR 3.0+</span></div>
-      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">定位：</b>極限挑戰你的能力，高節奏對戰與技術切磋。</div>
-      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">人數：</b>上限 5～6 人，輪替雙打，維持高強度運動量。</div>
-      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">適合：</b>熟悉切球、廚房區 dink / speed up 戰術應用、具備一定比賽經驗者。</div>
-    </div>
-    <div style="background:#16263D;border-radius:14px;padding:14px 16px;border-top:4px solid #3FD0C9;display:flex;flex-direction:column;gap:6px">
-      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;color:#3FD0C9">B</span><span style="font-weight:900">友善歡樂場</span><span style="font-size:12px;color:#9AA9BD">建議 DUPR 2.5–2.9</span></div>
-      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">定位：</b>友善交流與歡樂場面，順暢拉拍與雙打配合。</div>
-      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">人數：</b>上限 5～6 人，歡樂輪替交流。</div>
-      <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">適合：</b>掌握基本發球、接發球，想找同級球友穩健流汗者。</div>
-    </div>
-    <div style="background:#16263D;border-radius:14px;padding:14px 16px;border-top:4px solid #B98CFF;display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;color:#B98CFF">C</span><span style="font-weight:900">主題訓練場</span><span style="font-size:12px;color:#9AA9BD">建議 DUPR 2.5–2.9</span></div>
-      <div style="font-size:14px;line-height:1.65;color:#C5D0DE">單打挑戰賽與混雙友誼賽，解放你的無限可能！每週主題不同：</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
-          <div style="font-size:12px;font-weight:700;color:#B98CFF">第一週・第三週</div>
-          <div style="font-weight:700">8人循環單打＆混雙（4男4女）</div>
-          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">單打與混雙交替循環，人人都有豐富的出賽場次。</div>
+    <div style="font-weight:900;font-size:17px;padding:0 4px">五個場地怎麼選</div>
+    <sc-for list="{{ infoCourts }}" as="c" hint-placeholder-count="5">
+      <div style="background:#16263D;border-radius:14px;padding:14px 16px;border-top:4px solid {{ c.accent }};display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;line-height:1;color:{{ c.accent }}">{{ c.no }}<span style="font-family:'Noto Sans TC',sans-serif;font-style:normal;font-weight:900;font-size:.6em;margin-left:1px">號場</span></span>
+          <span style="font-weight:900">{{ c.title }}</span>
+          <span style="font-size:12px;color:#9AA9BD">{{ c.level }}</span>
+          <sc-if value="{{ c.closed }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:11px;font-weight:700;color:#FFD27A;border:1px solid #6B5415;background:#2A2112;border-radius:6px;padding:1px 6px">目前未開放</span>
+          </sc-if>
         </div>
-        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
-          <div style="font-size:12px;font-weight:700;color:#B98CFF">第二週｜8人女雙友誼賽</div>
-          <div style="font-weight:700">玩法1｜「拆夥不拆情」旋轉搭檔制</div>
-          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">不固定搭檔，每輪重新組合，共 7 輪，每人與其他 7 人各搭檔一次。每場短局搶 9 分，最後計算個人勝場數與總得分。認識新朋友，沒有固定搭檔的強弱壓力。</div>
-        </div>
-        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
-          <div style="font-size:12px;font-weight:700;color:#B98CFF">第四週</div>
-          <div style="font-weight:700">4人主題訓練（精緻進階）</div>
-          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">限額 4 人，小班輪換搭檔，針對技術主題精緻練習。</div>
-        </div>
-        <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
-          <div style="font-size:12px;font-weight:700;color:#B98CFF">第五週（當月遇第五個週五）｜女雙暢打友誼賽</div>
-          <div style="font-weight:700">玩法2｜閨蜜女雙 PK 賽</div>
-          <div style="font-size:13px;line-height:1.6;color:#C5D0DE">2 人一組報名（共 4 組），單循環賽＋冠亞軍決賽。適合有固定戰友的姐妹一起挑戰默契。</div>
-        </div>
+        <div style="font-size:13px;font-weight:700;color:{{ c.accent }}">🎯 {{ c.pos }}</div>
+        <div style="font-size:14px;line-height:1.65;color:#C5D0DE;text-wrap:pretty">{{ c.intro }}</div>
+        <sc-if value="{{ c.hasFeats }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:3px;font-size:14px;line-height:1.6;color:#C5D0DE">
+            <sc-for list="{{ c.feats }}" as="f" hint-placeholder-count="4">
+              <div style="display:flex;gap:6px"><span style="color:{{ c.accent }}">•</span><span>{{ f }}</span></div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-for list="{{ c.weeks }}" as="w" hint-placeholder-count="0">
+          <div style="background:#0E1A2B;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:12px;font-weight:700;color:{{ c.accent }}">{{ w.tag }}</div>
+            <div style="font-weight:700">{{ w.title }}</div>
+            <sc-if value="{{ w.meta }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;color:#9AA9BD">{{ w.meta }}</div>
+            </sc-if>
+            <sc-for list="{{ w.rules }}" as="r" hint-placeholder-count="3">
+              <div style="display:flex;gap:6px;font-size:13px;line-height:1.6;color:#C5D0DE"><span style="color:{{ c.accent }}">•</span><span>{{ r }}</span></div>
+            </sc-for>
+            <sc-if value="{{ w.hl }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;line-height:1.6;color:#F3F6FA">✨ {{ w.hl }}</div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">👥 人數：</b>{{ c.cap }}</div>
+        <sc-if value="{{ c.fit }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:14px;line-height:1.65;color:#C5D0DE"><b style="color:#F3F6FA">✅ 適合：</b>{{ c.fit }}</div>
+        </sc-if>
       </div>
+    </sc-for>
+  </section>
+
+  <section style="background:#16263D;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-weight:900;font-size:17px">📢 報名與活動須知</div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.65;color:#C5D0DE">
+      <div>✅ <b style="color:#F3F6FA">自由選場：</b>請依自身球技程度與活動需求選擇適合場地。</div>
+      <div>✅ <b style="color:#F3F6FA">尊重球友：</b>場上互相鼓勵、友善交流，尊重不同程度的球友。</div>
+      <div>✅ <b style="color:#F3F6FA">輪替公平：</b>依各場輪替規則進行，讓每位球友都有充分的上場機會。</div>
+      <div>✅ <b style="color:#F3F6FA">準時報到：</b>建議提前 10 分鐘到場，完成熱身並了解當日規則。</div>
+      <div>✅ <b style="color:#F3F6FA">名額限制：</b>各場額滿為止，若有缺額或調整，將於群組公告。</div>
+      <div>✅ <b style="color:#F3F6FA">分級提醒：</b>DUPR 或建議等級僅供分場參考，未有正式評分者可依實際球技程度選擇。</div>
     </div>
   </section>
 
   <section style="background:#16263D;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
-    <div style="font-weight:900;font-size:17px">報名與分場須知</div>
+    <div style="font-weight:900;font-size:17px">系統怎麼分場</div>
     <div style="display:grid;grid-template-columns:24px 1fr;gap:10px 8px;font-size:14px;line-height:1.65;color:#C5D0DE">
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">1</span><span>報名時填寫姓名、性別與 <b style="color:#F3F6FA">DUPR 等級</b>，可選「自動」或指定志願場地。</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">2</span><span>選「自動」者：3.0 以上先排 A 場，A 場額滿再依序排 B、C 場；2.5–2.9 先排 B 場，B 場額滿再排 C 場。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">2</span><span>選「自動」者：3.0 以上先排 1 號場，額滿依序排 2、3 號場；2.7–2.9 先排 2 號場，額滿排 3 號場；2.5–2.6 先排 3 號場，額滿排 5 號場；2.5 以下排 5 號場。4 號主題場請直接選志願。</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">3</span><span>依<b style="color:#F3F6FA">報名先後順序</b>分配，額滿者進入候補，有人取消會自動遞補。</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">4</span><span>C 場名額有性別限制：第一、三週 4 男 4 女；第二、五週限女生 8 位；第四週限額 4 人。</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">5</span><span>第五週閨蜜 PK 賽請兩人<b style="color:#F3F6FA">連續報名</b>，系統會依順序兩兩成組。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">4</span><span>4 號場名額依當週主題：第一、三週 4 男 4 女；第二週限女生 8 位；第四週（及當月第五個週五）不限性別 8 人。</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">5</span><span>第二週若採玩法 B 閨蜜 PK 賽，請兩人<b style="color:#F3F6FA">連續報名</b>，系統會依順序兩兩成組。</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#D7F54A">6</span><span>賽程由系統自動輪替，平均分配上場與休息，每局結束請於「賽程」頁登錄比分。</span>
     </div>
   </section>
+
+  <div style="text-align:center;font-size:14px;line-height:1.7;color:#C5D0DE;padding:4px 8px;text-wrap:pretty">🔥 每個星期五，讓汗水與歡笑一起點燃球場！<br>🏓 <b style="color:#D7F54A">六甲頂匹克球熱血團 Smash Dinker</b>，邀請你一起熱血開打！</div>
 
   <button onClick="{{ goSignup }}" style="min-height:50px;border:none;border-radius:12px;background:#D7F54A;color:#0E1A2B;font-weight:900;font-size:17px;letter-spacing:.06em;cursor:pointer">我要報名 →</button>
 </sc-if>
@@ -195,8 +231,8 @@ input::placeholder{color:#6B7C93}
     </div>
     <div style="display:flex;flex-direction:column;gap:6px">
       <div style="font-size:12px;color:#9AA9BD">志願場地</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-        <sc-for list="{{ prefs }}" as="p" hint-placeholder-count="4">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        <sc-for list="{{ prefs }}" as="p" hint-placeholder-count="6">
           <button onClick="{{ p.onClick }}" style="min-height:44px;border-radius:10px;border:1px solid {{ p.border }};background:{{ p.bg }};color:{{ p.color }};font-weight:700;font-size:14px;cursor:pointer">{{ p.label }}</button>
         </sc-for>
       </div>
@@ -268,12 +304,22 @@ input::placeholder{color:#6B7C93}
       <button onClick="{{ onMoveNoteClose }}" aria-label="關閉提示" style="background:transparent;border:none;color:#FFD27A;font-size:16px;cursor:pointer;padding:0;min-width:24px;min-height:24px">×</button>
     </div>
   </sc-if>
+  <sc-if value="{{ showThemePick }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#16263D;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;border-left:4px solid #B98CFF">
+      <div style="font-size:13px;color:#C5D0DE">本週 4 號場女雙交流日玩法（依當週公告擇一）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <sc-for list="{{ themePick }}" as="o" hint-placeholder-count="2">
+          <button onClick="{{ o.onClick }}" style="min-height:44px;border-radius:10px;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-weight:700;font-size:13px;cursor:pointer;padding:4px 6px">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
   <button onClick="{{ onCopyCourts }}" style="min-height:46px;border:1px solid #2A3F5E;border-radius:12px;background:#16263D;color:#D7F54A;font-weight:700;font-size:15px;cursor:pointer">{{ copyCourtsLabel }}</button>
-  <sc-for list="{{ courts }}" as="c" hint-placeholder-count="3">
+  <sc-for list="{{ courts }}" as="c" hint-placeholder-count="5">
     <section style="background:#16263D;border-radius:14px;overflow:hidden;border-top:4px solid {{ c.accent }}">
       <div style="padding:14px 16px 10px;display:flex;flex-direction:column;gap:6px">
         <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:34px;line-height:1;color:{{ c.accent }}">{{ c.letter }}</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:34px;line-height:1;color:{{ c.accent }}">{{ c.letter }}<span style="font-family:'Noto Sans TC',sans-serif;font-style:normal;font-weight:900;font-size:.6em;margin-left:1px">號場</span></span>
           <div style="flex:1;min-width:0;display:flex;flex-direction:column">
             <span style="font-weight:900;font-size:16px">{{ c.name }}</span>
             <span style="font-size:12px;color:#9AA9BD">{{ c.level }}</span>
@@ -294,8 +340,8 @@ input::placeholder{color:#6B7C93}
           <span style="flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }} <span style="font-weight:400;font-size:11px;color:#FFD27A">{{ p.warn }}</span></span>
           <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;width:30px;text-align:right">{{ p.dupr }}</span>
           <div style="display:flex;gap:4px">
-            <sc-for list="{{ p.chips }}" as="k" hint-placeholder-count="3">
-              <button onClick="{{ k.onClick }}" title="移到{{ k.l }}場" style="width:28px;height:28px;border-radius:7px;border:1px solid {{ k.border }};background:{{ k.bg }};color:{{ k.color }};font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;cursor:pointer;padding:0">{{ k.l }}</button>
+            <sc-for list="{{ p.chips }}" as="k" hint-placeholder-count="5">
+              <button onClick="{{ k.onClick }}" title="移到{{ k.l }}號場" style="width:28px;height:28px;border-radius:7px;border:1px solid {{ k.border }};background:{{ k.bg }};color:{{ k.color }};font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;cursor:pointer;padding:0">{{ k.l }}</button>
             </sc-for>
           </div>
         </div>
@@ -316,7 +362,7 @@ input::placeholder{color:#6B7C93}
         <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:700">{{ p.name }}</span><span style="font-size:11px;color:#9AA9BD">{{ p.reason }}</span></span>
         <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px">{{ p.dupr }}</span>
         <div style="display:flex;gap:4px">
-          <sc-for list="{{ p.chips }}" as="k" hint-placeholder-count="3">
+          <sc-for list="{{ p.chips }}" as="k" hint-placeholder-count="5">
             <button onClick="{{ k.onClick }}" style="width:28px;height:28px;border-radius:7px;border:1px solid {{ k.border }};background:{{ k.bg }};color:{{ k.color }};font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;cursor:pointer;padding:0">{{ k.l }}</button>
           </sc-for>
         </div>
@@ -326,8 +372,8 @@ input::placeholder{color:#6B7C93}
 </sc-if>
 
 <sc-if value="{{ isSched }}" hint-placeholder-val="{{ false }}">
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#16263D;border-radius:12px;padding:5px">
-    <sc-for list="{{ schedTabs }}" as="t" hint-placeholder-count="3">
+  <div style="display:grid;grid-template-columns:repeat({{ openCount }},1fr);gap:6px;background:#16263D;border-radius:12px;padding:5px">
+    <sc-for list="{{ schedTabs }}" as="t" hint-placeholder-count="5">
       <button onClick="{{ t.onClick }}" style="min-height:44px;border:none;border-radius:9px;background:{{ t.bg }};color:{{ t.color }};font-weight:900;font-size:15px;cursor:pointer">{{ t.label }}</button>
     </sc-for>
   </div>
@@ -336,6 +382,16 @@ input::placeholder{color:#6B7C93}
     <div style="font-size:13px;color:#9AA9BD;text-wrap:pretty">{{ sched.rule }}</div>
     <div style="font-size:12px;color:{{ sched.color }};text-wrap:pretty">{{ sched.note }}</div>
   </div>
+  <sc-if value="{{ showThemePickSched }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#16263D;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;border-left:4px solid #B98CFF">
+      <div style="font-size:13px;color:#C5D0DE">本週 4 號場女雙交流日玩法（依當週公告擇一）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <sc-for list="{{ themePick }}" as="o" hint-placeholder-count="2">
+          <button onClick="{{ o.onClick }}" style="min-height:44px;border-radius:10px;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.color }};font-weight:700;font-size:13px;cursor:pointer;padding:4px 6px">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
   <button onClick="{{ onCopySched }}" style="min-height:46px;border:1px solid #2A3F5E;border-radius:12px;background:#16263D;color:#D7F54A;font-weight:700;font-size:15px;cursor:pointer">{{ copySchedLabel }}</button>
   <sc-if value="{{ sched.missing }}" hint-placeholder-val="{{ false }}">
     <div style="background:#2A2112;color:#FFD27A;border-radius:12px;padding:12px 14px;font-size:14px">{{ sched.missing }}</div>
@@ -345,7 +401,7 @@ input::placeholder{color:#6B7C93}
       <div style="background:#16263D;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;justify-content:space-between;font-size:12px;color:#9AA9BD">
           <span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#F3F6FA">{{ m.time }}</span>　{{ m.label }}</span>
-          <span>#{{ m.no }} · 搶{{ m.target }}</span>
+          <span>#{{ m.no }} · {{ m.scoring }}搶{{ m.target }}</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 54px;gap:8px;align-items:center">
           <span style="font-weight:700;color:{{ m.aColor }};font-size:15px">{{ m.tName }}</span>
@@ -363,10 +419,10 @@ input::placeholder{color:#6B7C93}
 
 <sc-if value="{{ isRank }}" hint-placeholder-val="{{ false }}">
   <div style="font-weight:700;font-size:16px;padding:0 4px">戰績 · {{ sessionLabel }}</div>
-  <sc-for list="{{ standings }}" as="c" hint-placeholder-count="3">
+  <sc-for list="{{ standings }}" as="c" hint-placeholder-count="5">
     <section style="background:#16263D;border-radius:14px;overflow:hidden;border-left:0">
       <div style="padding:12px 16px;display:flex;align-items:center;gap:10px">
-        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;line-height:1;color:{{ c.accent }}">{{ c.letter }}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:26px;line-height:1;color:{{ c.accent }}">{{ c.letter }}<span style="font-family:'Noto Sans TC',sans-serif;font-style:normal;font-weight:900;font-size:.6em;margin-left:1px">號場</span></span>
         <span style="font-weight:700">{{ c.name }}</span>
       </div>
       <div style="display:grid;grid-template-columns:28px 1fr 56px 44px 44px;gap:6px;padding:6px 16px;font-size:11px;color:#6B7C93;border-top:1px solid #1E3150">
@@ -400,7 +456,7 @@ input::placeholder{color:#6B7C93}
 </nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;capAB&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;min&quot;:4,&quot;max&quot;:8,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;A/B場&quot;},&quot;gamesAB&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:8,&quot;min&quot;:4,&quot;max&quot;:16,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;A/B場&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;capAB&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;min&quot;:4,&quot;max&quot;:8,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;雙打場&quot;},&quot;gamesAB&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:8,&quot;min&quot;:4,&quot;max&quot;:16,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;雙打場&quot;}}">
 const KEY = 'ljd-pickle-v1';
 
 /* ===================== Google 試算表後台 =====================
@@ -444,17 +500,77 @@ const api = (action, payload) => {
 };
 
 const DEMO = [['阿凱','M',3.4,'auto'],['Jason','M',3.1,'auto'],['小安','F',3.0,'auto'],['大熊','M',3.6,'auto'],['Mia','F',3.2,'auto'],['老陳','M',3.0,'auto'],['Kevin','M',3.3,'auto'],
-['小芸','F',2.7,'C'],['佩佩','F',2.6,'C'],['Ruby','F',2.8,'C'],['阿哲','M',2.7,'C'],['小胖','M',2.5,'C'],['Leo','M',2.9,'C'],['Yuki','F',2.9,'C'],['阿宏','M',2.6,'C'],
-['志明','M',2.8,'auto'],['春嬌','F',2.6,'C'],['阿德','M',2.5,'auto'],['小美','F',2.7,'C'],['Tina','F',2.9,'C'],['阿Ben','M',2.8,'auto'],['Olivia','F',2.5,'auto'],['小琪','F',2.8,'auto'],['Amy','F',2.6,'auto']];
-const ACC = { A: '#FF5A36', B: '#3FD0C9', C: '#B98CFF' };
+['小芸','F',2.7,'4'],['佩佩','F',2.6,'4'],['Ruby','F',2.8,'4'],['阿哲','M',2.7,'4'],['小胖','M',2.5,'4'],['Leo','M',2.9,'4'],['Yuki','F',2.9,'4'],['阿宏','M',2.6,'4'],
+['志明','M',2.8,'auto'],['春嬌','F',2.6,'4'],['阿德','M',2.5,'auto'],['小美','F',2.7,'4'],['Tina','F',2.9,'4'],['阿Ben','M',2.8,'auto'],['Olivia','F',2.5,'auto'],['小琪','F',2.8,'auto'],['Amy','F',2.6,'auto'],
+['Joe','M',2.6,'auto'],['阿彬','M',2.3,'auto'],['小雯','F',2.2,'auto'],['Sandy','F',2.4,'auto'],['阿豪','M',2.0,'auto'],['Vivi','F',2.7,'4']];
+// 場地代號就是場地號碼。4 號是每週主題場，其餘四面是輪替雙打
+const COURTS = ['1', '2', '3', '4', '5'];
+const THEME = '4';
+// 開放場地：只留認得的場號、照場號排序；一面都沒開等於設定壞了，當成全開，不要讓整頁沒有場地
+const normOpen = v => { const o = COURTS.filter(c => Array.isArray(v) && v.map(String).includes(c)); return o.length ? o : COURTS.slice(); };
+const ACC = { 1: '#FF5A36', 2: '#FF9F1C', 3: '#3FD0C9', 4: '#B98CFF', 5: '#5CD68A' };
+// lo/hi 是建議 DUPR 範圍，只用來在分場頁標「低於／高於建議」，不擋人
+const COURT_META = {
+  1: { name: '極限競技挑戰場', level: '建議 DUPR 3.0 以上 · 雙打輪替制', lo: 3.0, hi: 99, pos: '高強度競技 × 戰術對抗 × 技術突破',
+    desc: '高節奏雙打對抗，Dink、Speed Up、Reset 等進階技術應用，以強度與比賽品質為優先。',
+    intro: '想挑戰自己的極限？這裡就是你的主場！以高節奏的雙打對抗為核心，透過進階球路運用、攻防轉換及實戰戰術，與實力相近的球友相互切磋。',
+    feats: ['進階雙打競技與戰術配合', 'Dink、Speed Up、Reset 等技術應用', '高節奏攻防與臨場判斷訓練', '以強度與比賽品質為優先'],
+    fit: '具備一定比賽經驗、熟悉基本戰術，並希望提升競技能力的球友。' },
+  2: { name: '熱血技術交流場', level: '建議 DUPR 2.7～3.0 · 雙打輪替制', lo: 2.7, hi: 3.0, pos: '技術進階 × 穩定對抗 × 團隊默契',
+    desc: '穩定多拍來回與落點控制，練習第三拍、雙打站位與主動進攻時機，強調交流與技術成長。',
+    intro: '想從穩定打球進一步提升到競技層級嗎？這裡適合已有一定基礎、想磨練戰術與穩定度的球友，在友善競爭中突破自己！',
+    feats: ['穩定多拍來回與落點控制', 'Dink、第三拍處理與雙打站位', '練習攻防轉換與主動進攻時機', '強調交流與技術成長'],
+    fit: '已具備基本雙打觀念，希望提升技術、節奏掌控與比賽表現的球友。' },
+  3: { name: '友善歡樂交流場', level: '建議 2.5～2.8 · 歡樂輪替制', lo: 2.5, hi: 2.8, pos: '歡樂交流 × 雙打配合 × 穩定成長',
+    desc: '歡樂雙打、自由輪替，建立雙打站位與合作默契，不用擔心輸贏，也不必害怕失誤。',
+    intro: '不用擔心輸贏，也不必害怕失誤！這裡以輕鬆友善的氣氛為主，讓每位球友都能享受打球樂趣，在交流中累積經驗、培養雙打默契。',
+    feats: ['歡樂雙打、自由輪替', '發球、接發球與基本落點控制', '建立雙打站位與合作默契', '鼓勵交流、互相學習'],
+    fit: '已熟悉基本規則與擊球方式，想穩定累積球場經驗的球友。' },
+  4: { name: '每週主題挑戰場', level: '建議 2.5～2.9', lo: 2.5, hi: 2.9, pos: '主題賽事 × 趣味競技 × 社交交流',
+    intro: '每個星期五都有不同玩法！不只是雙打，更結合單打挑戰、混雙輪替、女雙交流及搭檔默契賽，讓每一次上場都充滿新鮮感！',
+    feats: ['全場採落地得分制：每一球都計分，不論哪一方發球', '每局搶 15 分，須領先 2 分獲勝，節奏快、時間好掌握'] },
+  5: { name: '輕鬆友善休閒場', level: '建議 2.5 以下 · 輕鬆輪替', lo: 0, hi: 2.5, pos: '初階練習 × 輕鬆運動 × 快樂交友',
+    desc: '基礎發球、接發球與來回對打，熟悉規則與雙打站位，以友善交流為主，不以勝負為壓力。',
+    intro: '剛開始接觸匹克球？或是想打球流汗、不追求高強度競技？歡迎加入輕鬆友善場！這裡重視的是參與感、運動樂趣，以及每一位球友的打球體驗。',
+    feats: ['基礎發球、接發球與來回對打', '熟悉場地規則與雙打站位', '輕鬆輪替，鼓勵新手參與', '以友善交流為主，不以勝負為壓力'],
+    fit: '初學者、休閒玩家，以及希望輕鬆打球的球友。' }
+};
+// 說明頁 4 號場的每週玩法
+const THEME_WEEKS = [
+  { tag: '🔥 第一、三週', title: '8人單打＆混雙循環挑戰', meta: '參賽名額：4男＋4女',
+    rules: ['單打挑戰與混雙友誼賽交替進行', '依當週賽程安排輪替出場', '透過不同對手與搭檔累積實戰經驗', '兼顧競技性、趣味性與交流機會'], hl: '挑戰單打實力，也考驗混雙合作默契！' },
+  { tag: '💕 第二週｜8人女雙交流日・玩法 A', title: '拆夥不拆情・旋轉搭檔賽', meta: '8 位女生個人報名（玩法 A／B 依當週公告擇一）',
+    rules: ['每輪更換搭檔，共規劃 7 輪', '每人與其他 7 位球友各搭檔一次', '每人出賽 7 場，每場採落地得分搶 15 分', '最後統計個人勝場數及累積得分'], hl: '不固定搭檔、不怕落單，讓每個人都有機會認識不同球友！' },
+  { tag: '💕 第二週｜8人女雙交流日・玩法 B', title: '閨蜜女雙 PK 賽', meta: '2 人一組，共 4 組報名',
+    rules: ['固定搭檔報名（請兩人連續報名）', '4 組進行單循環賽', '依循環賽排名，由前 2 名進行冠亞軍決賽'], hl: '帶上妳的最佳戰友，一起挑戰雙打默契與團隊榮耀！' },
+  { tag: '🎲 第四週', title: '趣味挑戰交流日', meta: '當月若有第五個週五，比照第四週',
+    rules: ['可安排隨機搭檔雙打、趣味任務賽、男女混合交流賽等', '依當週公告決定活動內容', '系統先以隨機搭檔輪替雙打排賽程'], hl: '' }
+];
+// 舊版用 A/B/C：A＝極限挑戰（現 1 號）、B＝友善歡樂（現 2 號）、C＝主題（現 4 號）。
+// 本機存檔與試算表裡的舊資料都要能讀，所以讀進來時一律換成新代號
+const LEGACY = { A: '1', B: '2', C: '4' };
+const migPref = v => LEGACY[v] || v;
+const migRosters = rs => { const o = {}; Object.keys(rs || {}).forEach(k => { o[k] = (rs[k] || []).map(p => p && LEGACY[p.pref] ? { ...p, pref: migPref(p.pref) } : p); }); return o; };
+// 比分 key 是「日期|場地|對戰」，場地那一段也要換。新舊同時存在時以新的為準
+const migScores = sc => {
+  const o = {};
+  Object.keys(sc || {}).forEach(k => {
+    const parts = k.split('|');
+    if (!LEGACY[parts[1]]) { o[k] = sc[k]; return; }
+    parts[1] = LEGACY[parts[1]];
+    const nk = parts.join('|');
+    if (!(nk in sc)) o[nk] = sc[k];
+  });
+  return o;
+};
 // DUPR 的有效範圍只定義在這裡：輸入欄的 min/max、驗證、錯誤訊息全部由此產生，避免三處各說各話
 const DUPR_MIN = 2, DUPR_MAX = 8;
 const DUPR_HINT = `DUPR 請輸入 ${DUPR_MIN.toFixed(1)}–${DUPR_MAX.toFixed(1)}`;
 const C_INFO = {
-  rr: { title: '8人循環單打＆混雙', rule: '4男4女循環賽制，單打與混雙交替，人人都有豐富出賽場次。', cap: 8, target: 11 },
-  rotate: { title: '女雙「拆夥不拆情」旋轉搭檔', rule: '8位女生不固定搭檔，共7輪，每人與其他7人各搭檔一次。搶9分，計個人勝場與總得分。', cap: 8, target: 9 },
-  pk: { title: '閨蜜女雙 PK 賽', rule: '2人一組共4組（依報名順序兩兩成組），單循環賽＋冠亞軍決賽。', cap: 8, target: 11 },
-  train4: { title: '4人主題訓練（精緻進階）', rule: '限額4人，輪換搭檔進行主題技術訓練。', cap: 4, target: 11 }
+  rr: { title: '8人單打＆混雙循環挑戰', rule: '4男＋4女，單打挑戰與混雙友誼賽交替進行，依賽程輪替出場。落地得分制，每局搶 15 分。', cap: 8, target: 15 },
+  rotate: { title: '女雙交流日｜拆夥不拆情・旋轉搭檔賽', rule: '8 位女生個人報名，每輪更換搭檔共 7 輪，每人與其他 7 人各搭檔一次。落地得分制，每場搶 15 分，統計個人勝場數及累積得分。', cap: 8, target: 15 },
+  pk: { title: '女雙交流日｜閨蜜女雙 PK 賽', rule: '2 人一組共 4 組（依報名順序兩兩成組），單循環賽，前 2 名進行冠亞軍決賽。落地得分制，每局搶 15 分。', cap: 8, target: 15 },
+  fun: { title: '趣味挑戰交流日', rule: '隨機搭檔雙打、趣味任務賽、男女混合交流等，依當週公告。系統先以隨機搭檔輪替雙打排賽程。落地得分制，每局搶 15 分。', cap: 8, target: 15 }
 };
 const demoPlayers = () => DEMO.map((d, i) => ({ id: i + 1, name: d[0], gender: d[1], dupr: d[2], pref: d[3] }));
 const START_DEFAULT = '2026-10-02';
@@ -462,9 +578,13 @@ const SESSION_COUNT = 8;
 // 場地時間 19:00–21:00。每局時間用實際打球的經驗值，不是把 120 分鐘硬除以局數——
 // 硬除會排出「每局 8 分鐘打完搶 9 分」這種對不上現場的時間表
 const SESSION_MINS = 120, START_HOUR = 19;
-const minsPerGame = target => target >= 11 ? 15 : 11;
-// 場地時間放得下幾局。A/B 場的預設局數與 C 場循環賽都由這裡算，不要兩邊各寫一個數字
-const gamesFor = target => Math.floor(SESSION_MINS / minsPerGame(target));
+// 落地得分制（rally scoring）每一球都計分，沒有換發球權空轉，一局比傳統發球得分快、也比較好估
+const minsPerGame = (target, rally) => rally ? (target >= 15 ? 12 : target >= 11 ? 10 : 8) : (target >= 11 ? 15 : 11);
+// 場地時間放得下幾局。雙打場的預設局數與 4 號場循環賽都由這裡算，不要兩邊各寫一個數字
+const gamesFor = (target, rally) => Math.floor(SESSION_MINS / minsPerGame(target, rally));
+// 4 號主題場全部採落地得分制，其餘場地維持傳統發球得分
+const isRally = court => court === THEME;
+const scoringOf = court => isRally(court) ? '落地得分' : '發球得分';
 const clockAt = mins => `${START_HOUR + Math.floor(mins / 60)}:${String(mins % 60).padStart(2, '0')}`;
 const isoOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const dateOf = iso => { const [y, m, d] = String(iso).split('-').map(Number); return new Date(y, m - 1, d); };
@@ -482,7 +602,7 @@ const fridaysFrom = (startDate, n) => {
 };
 // 名單依場次分開存：rosters[ISO日期] = 該場的報名名單。選中的場次用日期而非索引記，
 // 場次清單長短變動時才不會指到別一場
-const defaults = () => ({ startDate: START_DEFAULT, sessionDate: isoOf(fridaysFrom(START_DEFAULT, 1)[0]), rosters: { [isoOf(fridaysFrom(START_DEFAULT, 1)[0])]: demoPlayers() }, nextId: DEMO.length + 1, scores: {}, tab: 'courts', schedCourt: 'A', form: { name: '', gender: 'M', dupr: '2.7', pref: 'auto' }, formError: '', confirmAct: '', copyKind: '', copyStatus: '', moveNote: '',
+const defaults = () => ({ startDate: START_DEFAULT, sessionDate: isoOf(fridaysFrom(START_DEFAULT, 1)[0]), rosters: { [isoOf(fridaysFrom(START_DEFAULT, 1)[0])]: demoPlayers() }, nextId: DEMO.length + 1, scores: {}, pkDates: [], openCourts: COURTS.slice(), tab: 'courts', schedCourt: '1', form: { name: '', gender: 'M', dupr: '2.7', pref: 'auto' }, formError: '', confirmAct: '', copyKind: '', copyStatus: '', moveNote: '',
   // 後台相關的狀態一律不寫進 localStorage（除了密碼另外存），重開頁面要重新確認連線
   cloud: API_URL ? 'loading' : 'off', cloudMsg: '', pending: [], askToken: false, adminMenu: false, tokenInput: '', capAB: 0, gamesAB: 0 });
 const pk = (a, b) => a < b ? a + '_' + b : b + '_' + a;
@@ -600,6 +720,10 @@ class Component extends DCLogic {
           st.rosters = { [isoOf(fridaysFrom(st.startDate, 1)[0])]: s.players || [] };
         }
         delete st.players; delete st.week2Mode; delete st.sessionIdx;
+        st.rosters = migRosters(st.rosters); st.scores = migScores(st.scores);
+        st.schedCourt = ACC[migPref(st.schedCourt)] ? migPref(st.schedCourt) : '1';
+        st.pkDates = Array.isArray(st.pkDates) ? st.pkDates.filter(isIso) : [];
+        st.openCourts = normOpen(st.openCourts);
         // 存檔有可能是手改過或舊版寫壞的，日期一律重新驗證過才敢用
         if (!isIso(st.startDate)) st.startDate = START_DEFAULT;
         const fr = fridaysFrom(st.startDate, SESSION_COUNT).map(isoOf);
@@ -616,8 +740,8 @@ class Component extends DCLogic {
   }
   upd(patch) {
     this.setState(patch, () => {
-      const { startDate, sessionDate, rosters, nextId, scores, tab, schedCourt } = this.state;
-      try { localStorage.setItem(KEY, JSON.stringify({ startDate, sessionDate, rosters, nextId, scores, tab, schedCourt })); } catch (e) {}
+      const { startDate, sessionDate, rosters, nextId, scores, pkDates, openCourts, tab, schedCourt } = this.state;
+      try { localStorage.setItem(KEY, JSON.stringify({ startDate, sessionDate, rosters, nextId, scores, pkDates, openCourts, tab, schedCourt })); } catch (e) {}
     });
   }
 
@@ -634,17 +758,19 @@ class Component extends DCLogic {
   adopt(j) {
     const patch = { cloud: 'ok', cloudMsg: '' };
     if (j.full) {
-      if (j.rosters) patch.rosters = j.rosters;
-      if (j.scores) patch.scores = j.scores;
+      if (j.rosters) patch.rosters = migRosters(j.rosters);
+      if (j.scores) patch.scores = migScores(j.scores);
+      if (Array.isArray(j.pkDates)) patch.pkDates = j.pkDates.filter(isIso);
+      if (Array.isArray(j.openCourts)) patch.openCourts = normOpen(j.openCourts);
       if (isIso(j.startDate)) patch.startDate = j.startDate;
       if (j.capAB) patch.capAB = j.capAB;
       if (j.gamesAB) patch.gamesAB = j.gamesAB;
     } else if (j.session) {
-      patch.rosters = { ...this.state.rosters, [j.session]: j.roster || [] };
+      patch.rosters = { ...this.state.rosters, ...migRosters({ [j.session]: j.roster || [] }) };
       // 該場次的比分整批換掉（不能只 merge，否則伺服器端刪掉的比分會留在本機）
       const kept = {};
       Object.keys(this.state.scores).forEach(k => { if (k.indexOf(j.session + '|') !== 0) kept[k] = this.state.scores[k]; });
-      patch.scores = { ...kept, ...(j.scores || {}) };
+      patch.scores = { ...kept, ...migScores(j.scores) };
     }
     this.upd(patch);
   }
@@ -693,33 +819,43 @@ class Component extends DCLogic {
     // 光檢查格式不夠：2026-99-99 格式對但 dateOf 會得到 Invalid Date，整排場次就變成 NaN/NaN
     return [...keep].filter(isIso).sort().map(dateOf);
   }
-  allocate(players, cMode, capAB) {
-    const R = { A: [], B: [], C: [], W: [] }, info = C_INFO[cMode];
+  allocate(players, cMode, capAB, open) {
+    const R = { W: [] }, info = C_INFO[cMode];
+    COURTS.forEach(c => { R[c] = []; });
+    const isOpen = c => open.includes(c);
     const space = (c, p) => {
-      if (c === 'A' || c === 'B') return R[c].length < capAB;
-      if (c !== 'C') return false;   // 以下幾行只看 cMode 不看 c，少了這道防線 R[c].push 會直接拋錯
-      if (cMode === 'rr') return R.C.filter(x => x.gender === p.gender).length < 4;
-      if (cMode === 'rotate' || cMode === 'pk') return p.gender === 'F' && R.C.length < 8;
-      return R.C.length < info.cap;
+      if (!R[c] || !isOpen(c)) return false;   // 不認得的場地代號，少了這道防線 R[c].push 會直接拋錯
+      if (c !== THEME) return R[c].length < capAB;
+      if (cMode === 'rr') return R[c].filter(x => x.gender === p.gender).length < 4;
+      if (cMode === 'rotate' || cMode === 'pk') return p.gender === 'F' && R[c].length < 8;
+      return R[c].length < info.cap;
     };
     // 這個場地為什麼進不去。null＝單純人數額滿；字串＝結構性限制（當週賽制或性別名額），
-    // 兩者要分開講，否則女雙週的男生會看到「C場已滿」而不是「本週C場限女生」。
+    // 兩者要分開講，否則女雙週的男生會看到「4號場已滿」而不是「本週4號場限女生」。
     const why = (c, p) => {
-      if (c === 'A' || c === 'B') return null;
-      if (cMode === 'rr') return `C場${p.gender === 'M' ? '男' : '女'}生名額已滿`;
-      if (cMode === 'rotate' || cMode === 'pk') return p.gender === 'F' ? null : '本週C場限女生';
-      return 'C場限額 4 人已滿';
+      if (c !== THEME) return null;
+      if (cMode === 'rr') return `${THEME}號場${p.gender === 'M' ? '男' : '女'}生名額已滿`;
+      if (cMode === 'rotate' || cMode === 'pk') return p.gender === 'F' ? null : `本週${THEME}號場限女生`;
+      return null;
     };
     players.forEach(p => {
-      // ACC 的鍵就是場地代號；pref 不是 A/B/C 時（例如存檔壞掉）當成「自動」處理
-      const pref = ACC[p.pref] ? p.pref : 'auto';
-      // 須知 2：選「自動」者 3.0 以上先排 A 場、2.5–2.9 先排 B 場，額滿都依序往下一個場地遞補
-      const tries = pref === 'auto' ? (p.dupr >= 3 ? ['A', 'B', 'C'] : ['B', 'C']) : [pref];
+      // ACC 的鍵就是場地代號；pref 不是 1–5 時（例如存檔壞掉）當成「自動」處理
+      // 志願的場地沒開時也當成「自動」，依 DUPR 排到有開的場地，而不是直接丟進候補
+      const pref = ACC[p.pref] && isOpen(p.pref) ? p.pref : 'auto';
+      // 選「自動」者依 DUPR 先排對應的場地，額滿再依序往下一個場地遞補。4 號主題場只收指定志願
+      let tries = pref === 'auto'
+        ? (p.dupr >= 3 ? ['1', '2', '3'] : p.dupr >= 2.7 ? ['2', '3'] : p.dupr >= 2.5 ? ['3', '5'] : ['5']).filter(isOpen)
+        : [pref];
+      // 對應的場地全都沒開（例如只開 1、4 號場時的初學者），就改排最接近程度的有開雙打場
+      if (!tries.length) {
+        const near = p.dupr >= 3 ? ['1', '2', '3', '5'] : p.dupr >= 2.7 ? ['2', '3', '1', '5'] : p.dupr >= 2.5 ? ['3', '5', '2', '1'] : ['5', '3', '2', '1'];
+        tries = near.filter(isOpen);
+      }
       const c = tries.find(t => space(t, p));
       if (c) { R[c].push(p); return; }
       const full = [], blocked = [];
       tries.forEach(t => { const r = why(t, p); if (r === null) full.push(t); else blocked.push(r); });
-      const parts = full.length ? [full.join('、') + '場已滿'] : [];
+      const parts = full.length ? [full.join('、') + '號場已滿'] : [];
       R.W.push({ ...p, reason: parts.concat(blocked).join('；') });
     });
     return R;
@@ -736,10 +872,16 @@ class Component extends DCLogic {
     const date = dateOf(dateKey), idx = fr.findIndex(d => isoOf(d) === dateKey);
     const md = d => `${d.getMonth() + 1}/${String(d.getDate()).padStart(2, '0')}`;
     const wk = Math.ceil(date.getDate() / 7);
-    const cMode = wk === 2 ? 'rotate' : (wk === 4 ? 'train4' : (wk === 5 ? 'pk' : 'rr'));
+    // 4 號主題場：一、三週單打＆混雙循環；二週女雙交流日（玩法 A 旋轉搭檔／玩法 B 閨蜜 PK，
+    // 由管理員逐場切換，記在 pkDates）；四週與當月第五個週五是趣味挑戰交流日
+    const pkWeek = (S.pkDates || []).includes(dateKey);
+    const cMode = wk === 2 ? (pkWeek ? 'pk' : 'rotate') : (wk >= 4 ? 'fun' : 'rr');
     const cInfo = C_INFO[cMode];
     const roster = S.rosters[dateKey] || [];
-    const R = this.allocate(roster, cMode, capAB);
+    // 只開放後台勾選的場地；關掉的場地不收人、不排賽程、不出現在各頁
+    const open = normOpen(S.openCourts);
+    const themeOpen = open.includes(THEME);
+    const R = this.allocate(roster, cMode, capAB, open);
     const byId = {}; roster.forEach(p => byId[p.id] = p);
     const nm = ids => ids.map(i => byId[i]?.name || '?').join(' / ');
     const gTxt = g => g === 'M' ? '男' : '女', gCol = g => g === 'M' ? '#7FB2FF' : '#FF8FC0';
@@ -756,32 +898,32 @@ class Component extends DCLogic {
     };
     // 手動換場可能失敗（目標場已滿或當週賽制不收），也可能把別人擠出去。
     // 原本兩種情況都是靜默的，看起來像「按了沒反應」，所以這裡把結果講出來。
-    const courtMap = alloc => { const m = {}; ['A', 'B', 'C'].forEach(k => alloc[k].forEach(p => m[p.id] = k)); return m; };
+    const courtMap = alloc => { const m = {}; COURTS.forEach(k => alloc[k].forEach(p => m[p.id] = k)); return m; };
     const setPref = (id, pref) => {
       const next = liveRoster().map(p => p.id === id ? { ...p, pref } : p);
-      const after = this.allocate(next, cMode, capAB), was = courtMap(R), now = courtMap(after);
+      const after = this.allocate(next, cMode, capAB, open), was = courtMap(R), now = courtMap(after);
       const me = next.find(p => p.id === id);
       let note = '';
       if (now[id] !== pref) {
         const w = after.W.find(p => p.id === id);
-        note = w ? `${me.name} 進不了 ${pref} 場：${w.reason}，已改列候補`
-          : `${me.name} 進不了 ${pref} 場，已改排到 ${now[id]} 場`;
+        note = w ? `${me.name} 進不了 ${pref}號場：${w.reason}，已改列候補`
+          : `${me.name} 進不了 ${pref}號場，已改排到 ${now[id]}號場`;
       }
       const bumped = next.filter(p => p.id !== id && was[p.id] && was[p.id] !== now[p.id]);
       if (bumped.length) {
-        const where = k => k ? k + '場' : '候補';
+        const where = k => k ? k + '號場' : '候補';
         const names = bumped.map(p => `${p.name}（${where(was[p.id])} → ${where(now[p.id])}）`).join('、');
-        note = (note ? note + '；' : `${me.name} 已移到 ${pref} 場；`) + `連帶變動：${names}`;
+        note = (note ? note + '；' : `${me.name} 已移到 ${pref}號場；`) + `連帶變動：${names}`;
       }
       setRoster(next, { moveNote: note });
     };
-    const chips = (p, cur) => ['A', 'B', 'C'].map(l => ({ l, onClick: () => setPref(p.id, l), bg: cur === l ? ACC[l] : 'transparent', color: cur === l ? '#0E1A2B' : ACC[l], border: ACC[l] }));
-    const courtOf = {}; ['A', 'B', 'C'].forEach(c => R[c].forEach(p => courtOf[p.id] = c));
+    const chips = (p, cur) => open.map(l => ({ l, onClick: () => setPref(p.id, l), bg: cur === l ? ACC[l] : 'transparent', color: cur === l ? '#0E1A2B' : ACC[l], border: ACC[l] }));
+    const courtOf = {}; COURTS.forEach(c => R[c].forEach(p => courtOf[p.id] = c));
 
     // schedules
     const ids = c => R[c].map(p => p.id);
     const mk = (court, list, target) => {
-      const step = minsPerGame(target);   // 用實際打一局要多久來排時間，不是把場地時間硬除以局數
+      const step = minsPerGame(target, isRally(court));   // 用實際打一局要多久來排時間，不是把場地時間硬除以局數
       const seen = {};
       return list.map((mRaw, i) => {
         // 比分要跟著「人」而不是跟著局數序號：名單一變動賽程就整批重排，
@@ -810,21 +952,22 @@ class Component extends DCLogic {
             this.send('setScore', { session: dateKey, court, key, a: now[0], b: now[1] });
           });
         };
-        return { ...m, key, no: i + 1, time: clockAt(mins), target, sa: a, sb: b, onA: setS(0), onB: setS(1), err, valid,
+        return { ...m, key, no: i + 1, time: clockAt(mins), target, scoring: scoringOf(court), sa: a, sb: b, onA: setS(0), onB: setS(1), err, valid,
           tName: m.tName || nm(m.t), uName: m.uName || nm(m.u),
           aColor: valid ? (+a > +b ? '#D7F54A' : '#9AA9BD') : '#F3F6FA', bColor: valid ? (+b > +a ? '#D7F54A' : '#9AA9BD') : '#F3F6FA' };
       });
     };
-    const schedA = mk('A', genDoubles(ids('A'), gamesAB), 11);
-    const schedB = mk('B', genDoubles(ids('B'), gamesAB), 11);
+    const scheds = {};
+    COURTS.filter(c => c !== THEME).forEach(c => { scheds[c] = mk(c, genDoubles(ids(c), gamesAB), 11); });
+    const T4 = THEME;
     let cList = [], teams = null, cMissing = '', oddId = null;
-    const cm = R.C.filter(p => p.gender === 'M').map(p => p.id), cw = R.C.filter(p => p.gender === 'F').map(p => p.id);
-    if (cMode === 'rr') { cList = genRR(cm, cw, gamesFor(cInfo.target)); if (cm.length < 4 || cw.length < 4) cMissing = `尚缺 ${Math.max(0, 4 - cm.length)} 男 ${Math.max(0, 4 - cw.length)} 女即可滿額開賽`; }
-    else if (cMode === 'rotate') { cList = genRotate(ids('C')); if (R.C.length < 8) cMissing = `旋轉搭檔需滿 8 位女生，尚缺 ${8 - R.C.length} 位`; }
+    const cm = R[T4].filter(p => p.gender === 'M').map(p => p.id), cw = R[T4].filter(p => p.gender === 'F').map(p => p.id);
+    if (cMode === 'rr') { cList = genRR(cm, cw, gamesFor(cInfo.target, true)); if (cm.length < 4 || cw.length < 4) cMissing = `尚缺 ${Math.max(0, 4 - cm.length)} 男 ${Math.max(0, 4 - cw.length)} 女即可滿額開賽`; }
+    else if (cMode === 'rotate') { cList = genRotate(ids(T4)); if (R[T4].length < 8) cMissing = `旋轉搭檔需滿 8 位女生，尚缺 ${8 - R[T4].length} 位`; }
     else if (cMode === 'pk') {
-      const c = ids('C'); teams = [];
+      const c = ids(T4); teams = [];
       for (let i = 0; i + 1 < c.length; i += 2) teams.push([c[i], c[i + 1]]);
-      // 人數是奇數時，最後一位湊不成組。原本會被無聲丟掉，但她在分場頁明明顯示已進 C 場
+      // 人數是奇數時，最後一位湊不成組。原本會被無聲丟掉，但她在分場頁明明顯示已進 4 號場
       if (c.length % 2) oddId = c[c.length - 1];
       if (teams.length === 4) {
         [[0, 1, 2, 3], [0, 2, 1, 3], [0, 3, 1, 2]].forEach((o, r) => { cList.push({ t: teams[o[0]], u: teams[o[1]], ti: o[0], ui: o[1], label: `循環賽 R${r + 1}` }); cList.push({ t: teams[o[2]], u: teams[o[3]], ti: o[2], ui: o[3], label: `循環賽 R${r + 1}` }); });
@@ -833,11 +976,12 @@ class Component extends DCLogic {
         if (oddId) cMissing += `；${byId[oddId]?.name || '最後一位'} 尚未成組，請再找一位一起報名`;
       }
     } else {
-      const c = ids('C');
-      if (c.length === 4) { const [a, b, d, e] = c; const o = [[[a, b], [d, e]], [[a, d], [b, e]], [[a, e], [b, d]]]; [...o, ...o].forEach(x => cList.push({ t: x[0], u: x[1], label: '主題訓練 · 輪換搭檔' })); }
-      else cMissing = `限額 4 人，目前 ${c.length} 人`;
+      // 趣味挑戰交流日：實際玩法看當週公告，系統先排隨機搭檔輪替雙打當底
+      const c = ids(T4);
+      cList = genDoubles(c, gamesFor(cInfo.target, true)).map(m => ({ ...m, label: '隨機搭檔雙打' }));
+      if (c.length < 4) cMissing = `至少 4 人才能排雙打，目前 ${c.length} 人`;
     }
-    let schedC = mk('C', cList, cInfo.target);
+    let schedC = mk(T4, cList, cInfo.target);
     let finalOrder = null;
     if (cMode === 'pk' && schedC.length) {
       // 種子序只看循環賽（此時 schedC 還沒接上決賽），決賽自己的比分才不會回頭改變決賽的對手
@@ -847,36 +991,37 @@ class Component extends DCLogic {
       const fin = doneAll && order.length >= 2
         ? { t: teams[order[0]], u: teams[order[1]], ti: order[0], ui: order[1], final: true, label: '冠亞軍決賽' }
         : { t: [], u: [], ti: -1, ui: -1, tName: '循環賽第 1 名', uName: '循環賽第 2 名', final: true, label: '冠亞軍決賽' };
-      schedC = mk('C', [...cList, fin], cInfo.target);
+      schedC = mk(T4, [...cList, fin], cInfo.target);
       const f = schedC[schedC.length - 1];
       // 冠亞軍由決賽勝負決定，不是循環賽積分最高的那一組
       if (f.valid && f.ti >= 0) finalOrder = (+f.sa > +f.sb ? [f.ti, f.ui] : [f.ui, f.ti]).map(String);
     }
-    const scheds = { A: schedA, B: schedB, C: schedC };
+    scheds[T4] = schedC;
 
-    const courtMeta = {
-      A: { name: '極限挑戰場', level: '建議 DUPR 3.0+ · 輪替雙打', desc: '高節奏對戰與技術切磋。熟悉切球、廚房區 dink / speed up 戰術、具比賽經驗者。' },
-      B: { name: '友善歡樂場', level: '建議 DUPR 2.5–2.9 · 歡樂輪替', desc: '友善交流、順暢拉拍與雙打配合。掌握基本發球、接發球，想找同級球友穩健流汗。' },
-      C: { name: cInfo.title, level: `建議 DUPR 2.5–2.9 · 第${wk}週主題`, desc: cInfo.rule }
-    };
-    const courts = ['A', 'B', 'C'].map(c => {
-      const cap = c === 'C' ? cInfo.cap : capAB, list = R[c];
+    // 4 號場的名稱與說明跟著當週主題變，其餘場地固定
+    const courtMeta = {};
+    COURTS.forEach(c => { courtMeta[c] = c === THEME
+      ? { ...COURT_META[c], name: cInfo.title, level: `${COURT_META[c].level} · 第${wk}週主題`, desc: cInfo.rule }
+      : COURT_META[c]; });
+    const capOf = c => c === THEME ? cInfo.cap : capAB;
+    const courts = open.map(c => {
+      const cap = capOf(c), list = R[c], meta = courtMeta[c];
       let note = '';
-      if (c === 'C') note = cMissing || (cMode === 'rr' ? `男 ${cm.length}/4 · 女 ${cw.length}/4` : '');
-      if (c !== 'C' && list.length > 0 && list.length < 4) note = '不足 4 人，無法開雙打';
-      return { letter: c, name: c + '場｜' + courtMeta[c].name, level: courtMeta[c].level, desc: courtMeta[c].desc, accent: ACC[c], count: list.length, cap,
+      if (c === THEME) note = cMissing || (cMode === 'rr' ? `男 ${cm.length}/4 · 女 ${cw.length}/4` : '');
+      if (c !== THEME && list.length > 0 && list.length < 4) note = '不足 4 人，無法開雙打';
+      return { letter: c, name: meta.name, level: meta.level, desc: meta.desc, accent: ACC[c], count: list.length, cap,
         pct: Math.min(100, list.length / cap * 100) + '%', note, empty: list.length === 0,
         players: list.map(p => ({ name: p.name, gtxt: gTxt(p.gender), gColor: gCol(p.gender), dupr: p.dupr.toFixed(1), chips: chips(p, c),
-          warn: p.id === oddId ? '未成組' : (c === 'A' && p.dupr < 3 ? '低於建議' : (c !== 'A' && p.dupr >= 3 ? '高於建議' : '')) })) };
+          warn: p.id === oddId ? '未成組' : (p.dupr < meta.lo ? '低於建議' : (p.dupr > meta.hi ? '高於建議' : '')) })) };
     });
     const waitlist = R.W.map(p => ({ name: p.name, gtxt: gTxt(p.gender), gColor: gCol(p.gender), dupr: p.dupr.toFixed(1), reason: p.reason, chips: chips(p, '') }));
 
-    const standings = ['A', 'B', 'C'].map(c => {
+    const standings = open.map(c => {
       let rows;
-      if (c === 'C' && cMode === 'pk' && teams) {
+      if (c === THEME && cMode === 'pk' && teams) {
         // 決賽不計入循環賽積分。原本算進去的話，決賽的比分會反過來改寫這張表，
         // 出現「決賽輸的那一組因為淨分高還是排第 1」這種結果。
-        const st = tally(scheds.C.filter(m => m.ti >= 0 && !m.final), m => [m.ti], m => [m.ui]);
+        const st = tally(scheds[THEME].filter(m => m.ti >= 0 && !m.final), m => [m.ti], m => [m.ui]);
         let keys = sortSt(st);
         // 決賽打完就以決賽結果定冠亞軍，第 3 名之後照循環賽排
         if (finalOrder) keys = [...finalOrder, ...keys.filter(k => !finalOrder.includes(k))].filter(k => st[k]);
@@ -888,30 +1033,30 @@ class Component extends DCLogic {
       // s0 留著原始的勝敗與得失分，推送到試算表的報表時要用（畫面上只用格式化過的欄位）
       rows = rows.map(r => ({ rank: r.rank, name: r.name, wl: `${r.s.w}-${r.s.l}`, pf: r.s.pf, diff: (r.s.pf - r.s.pa > 0 ? '+' : '') + (r.s.pf - r.s.pa), rankColor: r.rank === 1 ? '#D7F54A' : '#9AA9BD', s0: r.s }));
       // 欄位標題講清楚勝敗／得分是循環賽的，排名才不會看起來跟數字矛盾
-      return { letter: c, name: c === 'C' ? cInfo.title : courtMeta[c].name, accent: ACC[c], rows, empty: rows.length === 0, unit: c === 'C' && cMode === 'pk' ? '組別（以下為循環賽）' : '球友' };
+      return { letter: c, name: courtMeta[c].name, accent: ACC[c], rows, empty: rows.length === 0, unit: c === THEME && cMode === 'pk' ? '組別（以下為循環賽）' : '球友' };
     });
 
     const on = (a, b) => a === b;
     const tabs = [['info', '說明', 'INFO'], ['signup', '報名', 'JOIN'], ['courts', '分場', 'COURTS'], ['sched', '賽程', 'MATCHES'], ['rank', '戰績', 'RANK']].map(([k, label, en]) => ({
       label, en, onClick: () => this.upd({ tab: k, confirmAct: '', copyStatus: '', moveNote: '' }), color: on(S.tab, k) ? '#D7F54A' : '#9AA9BD', bar: on(S.tab, k) ? '#D7F54A' : 'transparent' }));
-    const sc = S.schedCourt;
-    const schedTabs = ['A', 'B', 'C'].map(c => ({ label: c + ' 場', onClick: () => this.upd({ schedCourt: c, copyStatus: '' }), bg: sc === c ? ACC[c] : 'transparent', color: sc === c ? '#0E1A2B' : '#C5D0DE' }));
+    const sc = open.includes(S.schedCourt) ? S.schedCourt : open[0];
+    const schedTabs = open.map(c => ({ label: c + '號', onClick: () => this.upd({ schedCourt: c, copyStatus: '' }), bg: sc === c ? ACC[c] : 'transparent', color: sc === c ? '#0E1A2B' : '#C5D0DE' }));
     // 誠實的時間估算：局數 × 每局實際時間。超出場地時間就直說超了多少，不要排一張對不上的表
     const timeNote = ms => {
       if (!ms.length) return { note: '', color: '#9AA9BD' };
-      const target = sc === 'C' ? cInfo.target : 11, total = ms.length * minsPerGame(target);
-      const base = `${ms.length} 局 × 每局約 ${minsPerGame(target)} 分鐘，預估 ${clockAt(0)}–${clockAt(total)}`;
+      const target = sc === THEME ? cInfo.target : 11, per = minsPerGame(target, isRally(sc)), total = ms.length * per;
+      const base = `${scoringOf(sc)}制，${ms.length} 局 × 每局約 ${per} 分鐘，預估 ${clockAt(0)}–${clockAt(total)}`;
       return total > SESSION_MINS
         ? { note: `${base}，比場地時間多 ${total - SESSION_MINS} 分鐘，最後幾局可能打不完`, color: '#FFD27A' }
         : { note: base, color: '#9AA9BD' };
     };
-    const schedInfo = sc === 'C'
-      ? { title: 'C場｜' + cInfo.title, rule: cInfo.rule, missing: cMissing, matches: scheds.C, ...timeNote(scheds.C) }
-      : { title: sc + '場｜' + courtMeta[sc].name, rule: `${R[sc].length} 人輪替雙打，系統依出賽次數平均輪休、避免重複搭檔。`, missing: R[sc].length < 4 ? `目前 ${R[sc].length} 人，需至少 4 人才能排雙打` : '', matches: scheds[sc], ...timeNote(scheds[sc]) };
+    const schedInfo = sc === THEME
+      ? { title: THEME + '號場｜' + cInfo.title, rule: cInfo.rule, missing: cMissing, matches: scheds[THEME], ...timeNote(scheds[THEME]) }
+      : { title: sc + '號場｜' + courtMeta[sc].name, rule: `${R[sc].length} 人輪替雙打，系統依出賽次數平均輪休、避免重複搭檔。`, missing: R[sc].length < 4 ? `目前 ${R[sc].length} 人，需至少 4 人才能排雙打` : '', matches: scheds[sc], ...timeNote(scheds[sc]) };
 
     const f = S.form;
     const selBtn = (on, acc) => ({ bg: on ? acc : '#0E1A2B', color: on ? '#0E1A2B' : '#C5D0DE', border: on ? acc : '#2A3F5E' });
-    const prefLabels = { auto: '自動', A: 'A場', B: 'B場', C: 'C場' };
+    const prefLabels = { auto: '自動' }; COURTS.forEach(c => { prefLabels[c] = c + '號場'; });
 
     // 清空／載入範例都會刪掉無法復原的資料，先說清楚會失去什麼再做
     const confirmAct = S.confirmAct || '';
@@ -920,7 +1065,7 @@ class Component extends DCLogic {
     const ofSession = k => k.indexOf(dateKey + '|') === 0;
     // 而且只數「現在還排得出這一局」的比分。名單一改，舊的 key 就對不上任何賽程了，
     // 這些孤兒 key 刻意留著（按錯志願換回來就能把分數接回去），但不該算進「會失去什麼」裡
-    const liveKeys = new Set([...scheds.A, ...scheds.B, ...scheds.C].map(m => m.key));
+    const liveKeys = new Set(COURTS.flatMap(c => scheds[c]).map(m => m.key));
     const scoreCount = [...liveKeys].filter(k => ofSession(k) && Array.isArray(S.scores[k]) && (hasVal(S.scores[k][0]) || hasVal(S.scores[k][1]))).length;
     const atRisk = `${roster.length} 位球友` + (scoreCount ? `與 ${scoreCount} 筆已登錄的比分` : '');
     const nothingToLose = roster.length === 0 && scoreCount === 0;
@@ -928,20 +1073,20 @@ class Component extends DCLogic {
       : confirmAct === 'demo' ? `載入範例會覆蓋目前的 ${atRisk}，這個動作無法復原。` : '';
     // 貼到 LINE 群用的純文字。固定團實際運作就是靠這一段，所以格式以「貼上就能發」為準
     const headLine = `六甲頂匹克球熱血團\n${md(date)}（第${wk}週）19:00–21:00`;
-    const courtsText = [headLine, ...['A', 'B', 'C'].map(c => {
-      const list = R[c], meta = courtMeta[c], cap = c === 'C' ? cInfo.cap : capAB;
-      const head = `【${c}場】${meta.name} ${list.length}/${cap}` + (c === 'C' && cMode === 'rr' ? `（男 ${cm.length}・女 ${cw.length}）` : '');
+    const courtsText = [headLine, ...open.map(c => {
+      const list = R[c], meta = courtMeta[c], cap = capOf(c);
+      const head = `【${c}號場】${meta.name} ${list.length}/${cap}` + (c === THEME && cMode === 'rr' ? `（男 ${cm.length}・女 ${cw.length}）` : '');
       if (!list.length) return `${head}\n（尚無球友）`;
-      return head + '\n' + list.map((p, i) => `${i + 1}. ${p.name}${c === 'C' ? ' ' + gTxt(p.gender) : ''} ${p.dupr.toFixed(1)}`).join('\n');
+      return head + '\n' + list.map((p, i) => `${i + 1}. ${p.name}${c === THEME ? ' ' + gTxt(p.gender) : ''} ${p.dupr.toFixed(1)}`).join('\n');
     }), R.W.length ? `【候補】${R.W.length} 人\n` + R.W.map(p => `・${p.name} ${p.dupr.toFixed(1)} — ${p.reason}`).join('\n') : '【候補】無',
       '※ 依報名先後順序、DUPR 與志願自動分配，有人取消會自動遞補'].join('\n\n');
 
     const schedText = (() => {
-      const info = sc === 'C' ? { name: cInfo.title } : courtMeta[sc];
+      const info = courtMeta[sc];
       const ms = scheds[sc];
-      const head = `${headLine}\n【${sc}場】${info.name}`;
-      if (!ms.length) return `${head}\n${sc === 'C' ? cMissing || '尚無賽程' : `目前 ${R[sc].length} 人，需至少 4 人才能排雙打`}`;
-      return `${head}（共 ${ms.length} 局・搶 ${sc === 'C' ? cInfo.target : 11} 分）\n\n` + ms.map(m => {
+      const head = `${headLine}\n【${sc}號場】${info.name}`;
+      if (!ms.length) return `${head}\n${sc === THEME ? cMissing || '尚無賽程' : `目前 ${R[sc].length} 人，需至少 4 人才能排雙打`}`;
+      return `${head}（共 ${ms.length} 局・${scoringOf(sc)}搶 ${sc === THEME ? cInfo.target : 11} 分）\n\n` + ms.map(m => {
         const score = m.sa !== '' && m.sb !== '' ? `${m.sa}:${m.sb}` : '—';
         return `${m.time} #${m.no} ${m.tName} vs ${m.uName}　${score}`;
       }).join('\n');
@@ -974,7 +1119,37 @@ class Component extends DCLogic {
     const reuseLabel = prevCount ? `沿用 ${md(fr[idx - 1])} 的 ${prevCount} 人名單` : '';
     const doReuse = () => replaceWith((this.state.rosters[prevKey] || []).map(p => ({ ...p })));
 
+    // 第二週的女雙玩法依當週公告擇一，所以由管理員逐場切換；切換會改變 4 號場的名額與賽程
+    const setPk = want => () => {
+      if (want === pkWeek || needAdmin('切換女雙玩法')) return;
+      const cur = (this.state.pkDates || []).filter(d => d !== dateKey);
+      const pkDates = want ? [...cur, dateKey].sort() : cur;
+      this.upd({ pkDates, moveNote: '' });
+      this.send('setSettings', { pkDates });
+    };
+    const themePick = wk === 2 && themeOpen ? [[false, '玩法 A｜旋轉搭檔'], [true, '玩法 B｜閨蜜 PK']].map(([v, label]) => ({ label, onClick: setPk(v), ...selBtn(pkWeek === v, ACC[THEME]) })) : [];
+    const infoCourts = COURTS.map(c => {
+      const m = COURT_META[c], theme = c === THEME;
+      return { no: c, accent: ACC[c], title: m.name, level: m.level, pos: m.pos, intro: m.intro,
+        feats: m.feats || [], hasFeats: !!(m.feats && m.feats.length), weeks: theme ? THEME_WEEKS : [],
+        cap: theme ? '8 人（依週次主題調整）' : (c === '5' ? `建議 ${capAB} 人（可依報名情況調整）` : `上限 ${capAB} 人（${c === '3' ? '歡樂' : '雙打'}輪替制）`),
+        fit: m.fit || '', closed: !open.includes(c) };
+    });
+
     return {
+      // 開放場地切換（管理選單）：至少要留一面，最後一面關不掉
+      openCount: open.length, themeOpen,
+      openToggles: COURTS.map(c => { const on = open.includes(c); return { label: c + '號', on, strike: on ? 'none' : 'line-through',
+        bg: on ? ACC[c] : 'transparent', color: on ? '#0E1A2B' : '#6B7C93', border: on ? ACC[c] : '#2A3F5E',
+        onClick: () => {
+          if (needAdmin('設定開放場地')) return;
+          const cur = normOpen(this.state.openCourts);
+          const next = cur.includes(c) ? cur.filter(x => x !== c) : COURTS.filter(x => x === c || cur.includes(x));
+          if (!next.length) return this.setState({ cloudMsg: '至少要開放一面場地' });
+          this.upd({ openCourts: next, moveNote: '' });
+          this.send('setSettings', { openCourts: next });
+        } }; }),
+      infoCourts, themePick, showThemePick: themePick.length > 0, showThemePickSched: themePick.length > 0 && sc === THEME,
       startLabel: md(fr[0]), startDate: S.startDate, sessionLabel: `${md(date)}（第${wk}週）`, cInfo,
       sessions: fr.map((d, i) => { const a = i === idx, n = (S.rosters[isoOf(d)] || []).length; return { md: md(d), wk: n ? `${n} 人` : `第${Math.ceil(d.getDate() / 7)}週`, onClick: () => this.upd({ sessionDate: isoOf(d), copyStatus: '', moveNote: '' }), bg: a ? '#D7F54A' : 'transparent', color: a ? '#0E1A2B' : '#C5D0DE', border: a ? '#D7F54A' : '#2A3F5E' }; }),
       isInfo: S.tab === 'info', goSignup: () => this.upd({ tab: 'signup' }), isSignup: S.tab === 'signup', isCourts: S.tab === 'courts', isSched: S.tab === 'sched', isRank: S.tab === 'rank',
@@ -991,7 +1166,7 @@ class Component extends DCLogic {
         this.send('setSettings', { startDate: e.target.value });
       },
       genders: [['M', '男'], ['F', '女']].map(([v, label]) => ({ label, ...selBtn(f.gender === v, v === 'M' ? '#7FB2FF' : '#FF8FC0'), onClick: () => this.setState({ form: { ...this.state.form, gender: v } }) })),
-      prefs: ['auto', 'A', 'B', 'C'].map(v => ({ label: prefLabels[v], ...selBtn(f.pref === v, v === 'auto' ? '#D7F54A' : ACC[v]), onClick: () => this.setState({ form: { ...this.state.form, pref: v } }) })),
+      prefs: ['auto', ...open].map(v => ({ label: prefLabels[v], ...selBtn(f.pref === v, v === 'auto' ? '#D7F54A' : ACC[v]), onClick: () => this.setState({ form: { ...this.state.form, pref: v } }) })),
       addPlayer: () => {
         const cur = this.state, cf = cur.form;
         const name = cf.name.trim(), dupr = parseFloat(cf.dupr);
@@ -1008,7 +1183,7 @@ class Component extends DCLogic {
       duprMin: DUPR_MIN, duprMax: DUPR_MAX,
       moveNote: S.moveNote || '', onMoveNoteClose: () => this.setState({ moveNote: '' }),
       onCopyCourts: copy('courts', courtsText), copyCourtsLabel: copyLabel('courts', '複製分場結果'),
-      onCopySched: copy('sched', schedText), copySchedLabel: copyLabel('sched', `複製 ${sc} 場賽程`),
+      onCopySched: copy('sched', schedText), copySchedLabel: copyLabel('sched', `複製 ${sc} 號場賽程`),
       copyFallback: S.copyStatus === 'fail' ? (S.copyKind === 'sched' ? schedText : courtsText) : '',
       onCopySelect: e => e.target.select(),
       confirmMsg, confirmYes: confirmAct === 'clear' ? '確定清空' : '確定覆蓋',
@@ -1019,8 +1194,8 @@ class Component extends DCLogic {
       roster: roster.map((p, i) => { const c = courtOf[p.id];
         // 自己這支手機報的名可以自己取消；要刪別人就得解鎖
         const mine = !API_URL || (p.device && p.device === myDevice);
-        return { no: i + 1, name: p.name, gtxt: gTxt(p.gender), gColor: gCol(p.gender), dupr: p.dupr.toFixed(1), prefTxt: p.pref === 'auto' ? '' : '志願' + p.pref,
-          badge: c ? c + '場' : '候補', badgeBg: c ? ACC[c] : '#2A2112', badgeColor: c ? '#0E1A2B' : '#FFD27A',
+        return { no: i + 1, name: p.name, gtxt: gTxt(p.gender), gColor: gCol(p.gender), dupr: p.dupr.toFixed(1), prefTxt: ACC[p.pref] ? '志願' + p.pref + '號' : '',
+          badge: c ? c + '號' : '候補', badgeBg: c ? ACC[c] : '#2A2112', badgeColor: c ? '#0E1A2B' : '#FFD27A',
           remove: () => {
             if (!mine && needAdmin(`取消「${p.name}」的報名`)) return;
             setRoster(liveRoster().filter(x => x.id !== p.id));
@@ -1065,7 +1240,7 @@ class Component extends DCLogic {
         this.send('snapshot', {
           session: dateKey,
           courts: courts.map(c => ({ letter: c.letter, players: R[c.letter].map(p => ({ name: p.name, gender: p.gender, dupr: p.dupr, pref: p.pref, note: '' })) })),
-          sched: ['A', 'B', 'C'].reduce((all, c) => all.concat(scheds[c].map(m => ({
+          sched: open.reduce((all, c) => all.concat(scheds[c].map(m => ({
             court: c, no: m.no, time: m.time, target: m.target, a: m.tName, b: m.uName, sa: m.sa, sb: m.sb, state: state(m)
           }))), []),
           standings: standings.reduce((all, g) => all.concat(g.rows.map(r => ({
